@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hacker's Room Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Hacker's Room Simulator</h1>
+        <div class="game-area">
+            <div class="room">
+                <img id="character" src="https://i.imgur.com/Giok1wO.png" alt="Character">
+                <img id="pc" src="https://i.imgur.com/OAkw2fl.png" alt="PC">
+                <div class="stats">
+                    <p>💻 Reputation: <span id="reputation">0</span></p>
+                    <p>📜 Posts: <span id="posts">0</span></p>
+                    <p>💰 Money: $<span id="money">100</span></p>
+                </div>
+            </div>
+            <div class="actions">
+                <button onclick="earnMoney()">💼 Do Freelance Job</button>
+                <button onclick="decorateRoom()">🪑 Decorate Room</button>
+            </div>
+        </div>
+        <div id="log"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
