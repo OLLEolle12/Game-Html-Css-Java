@@ -8,6 +8,18 @@
 <body>
     <div class="container">
         <h1>Hacker's Room Simulator</h1>
+        <!-- SETTINGS -->
+        <div class="settings">
+            <input type="text" id="hackerName" placeholder="Enter your hacker name">
+            <select id="deploySite">
+                <option value="Doxbin.com">Doxbin.com</option>
+                <option value="4chan.com">4chan.com</option>
+                <option value="Discord.com">Discord.com</option>
+            </select>
+            <button onclick="deploy()">🚀 Deploy</button>
+        </div>
+
+        <!-- MAIN GAME AREA -->
         <div class="game-area">
             <div class="room">
                 <img id="character" src="https://i.imgur.com/Giok1wO.png" alt="Character">
@@ -20,9 +32,29 @@
             </div>
             <div class="actions">
                 <button onclick="earnMoney()">💼 Do Freelance Job</button>
+                <button onclick="postDoxx()">⌨️ Post Fake Doxx</button>
                 <button onclick="decorateRoom()">🪑 Decorate Room</button>
             </div>
         </div>
+
+        <!-- SHOP -->
+        <div class="shop">
+            <h2>🛒 Shop</h2>
+            <div class="shop-item">
+                <span>New Chair ($50)</span>
+                <button onclick="buyItem('chair')">Buy</button>
+            </div>
+            <div class="shop-item">
+                <span>Wall Poster ($30)</span>
+                <button onclick="buyItem('poster')">Buy</button>
+            </div>
+            <div class="shop-item">
+                <span>Desk Upgrade ($100)</span>
+                <button onclick="buyItem('desk')">Buy</button>
+            </div>
+        </div>
+
+        <!-- LOG -->
         <div id="log"></div>
     </div>
     <script src="script.js"></script>
