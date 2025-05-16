@@ -1,115 +1,102 @@
 body {
-    margin: 0;
-    font-family: 'Courier New', monospace;
-    background-color: #a8d5ba;
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  background-color: #a8d5ba;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
-
 .sidebar {
-    width: 150px;
-    background-color: #6b8e23;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+  width: 150px;
+  background-color: #6b8e23;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
-
 .sidebar button {
-    margin: 5px 0;
-    padding: 10px;
-    background-color: #556b2f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 4px;
+  margin: 5px 0;
+  padding: 10px;
+  background-color: #556b2f;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
 }
-
 .sidebar button:hover {
-    background-color: #6b8e23;
+  background-color: #6b8e23;
 }
-
 .game-container {
-    flex: 1;
-    position: relative;
-    background-color: #7cfc00;
-    margin: 20px;
-    border: 2px solid #556b2f;
-    border-radius: 8px;
-    overflow: hidden;
+  flex: 1;
+  position: relative;
+  background-color: #7cfc00;
+  margin: 20px;
+  border: 2px solid #556b2f;
+  border-radius: 8px;
+  overflow: hidden;
 }
-
 .garden {
-    position: relative;
-    width: 800px;
-    height: 600px;
-    margin: auto;
-    background-color: #9fcd7e;
-    box-shadow: inset 0 0 20px #5c8a17;
+  position: relative;
+  width: 800px;
+  height: 600px;
+  margin: auto;
+  background-color: #9fcd7e;
+  box-shadow: inset 0 0 20px #5c8a17;
 }
-
 .fence {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    border: 12px solid #8b4513;
-    box-sizing: border-box;
-    pointer-events: none;
-    border-radius: 12px;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 12px solid #8b4513;
+  box-sizing: border-box;
+  pointer-events: none;
+  border-radius: 12px;
 }
-
 .menu {
-    position: absolute;
-    top: 0;
-    right: -320px;
-    width: 320px;
-    height: 100%;
-    background-color: #f0fff0;
-    box-shadow: -4px 0 10px rgba(0,0,0,0.4);
-    transition: right 0.3s ease;
-    padding: 20px;
-    overflow-y: auto;
-    font-family: monospace;
+  position: absolute;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  height: 100%;
+  background-color: #f0fff0;
+  box-shadow: -4px 0 10px rgba(0,0,0,0.4);
+  transition: right 0.3s ease;
+  padding: 20px;
+  overflow-y: auto;
+  font-family: monospace;
 }
-
 .menu.open {
-    right: 0;
+  right: 0;
 }
-
 .garden-item {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    image-rendering: pixelated;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  image-rendering: pixelated;
 }
-
 .shop-item {
-    width: 48px;
-    height: 48px;
-    margin: 5px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    image-rendering: pixelated;
-    transition: border-color 0.3s;
+  width: 48px;
+  height: 48px;
+  margin: 5px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  image-rendering: pixelated;
+  transition: border-color 0.3s;
 }
-
 .shop-item.selected {
-    border-color: #6b8e23;
+  border-color: #6b8e23;
 }
-
 h2 {
-    margin-top: 0;
-    font-size: 1.5em;
-    color: #356c09;
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #356c09;
 }
-
 .log {
-    background: #d4f1c5;
-    padding: 10px;
-    border-radius: 8px;
-    max-height: 150px;
-    overflow-y: auto;
-    font-size: 0.9em;
-    color: #2a4d0d;
+  background: #d4f1c5;
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 0.9em;
+  color: #2a4d0d;
 }
