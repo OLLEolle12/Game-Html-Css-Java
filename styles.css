@@ -7,7 +7,7 @@ body {
   overflow: hidden;
 }
 .sidebar {
-  width: 150px;
+  width: 170px;
   background-color: #6b8e23;
   display: flex;
   flex-direction: column;
@@ -16,29 +16,40 @@ body {
   box-sizing: border-box;
 }
 .sidebar button {
-  margin: 5px 0;
+  margin: 10px 0;
   padding: 5px;
   background-color: transparent;
   border: none;
   cursor: pointer;
   outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .sidebar button img {
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   image-rendering: pixelated;
   transition: transform 0.2s;
 }
 .sidebar button:hover img {
   transform: scale(1.1);
 }
+.icon-label {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #f0fff0;
+  user-select: none;
+  text-shadow: 1px 1px 2px #224400;
+}
 #cashDisplay {
-  margin-top: 15px;
+  margin-top: 20px;
   color: #f0fff0;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.3em;
   text-shadow: 1px 1px 2px #224400;
   user-select: none;
+  text-align: center;
 }
 .game-container {
   flex: 1;
@@ -97,7 +108,7 @@ body {
 .shop-item {
   width: 48px;
   height: 48px;
-  margin: 5px;
+  margin: 10px 10px 5px 10px;
   cursor: pointer;
   border: 2px solid transparent;
   image-rendering: pixelated;
@@ -105,6 +116,17 @@ body {
 }
 .shop-item.selected {
   border-color: #6b8e23;
+}
+.shop-item-container {
+  display: inline-block;
+  text-align: center;
+  width: 70px;
+}
+.shop-item-price {
+  font-size: 12px;
+  color: #356c09;
+  margin-top: 3px;
+  user-select: none;
 }
 h2 {
   margin-top: 0;
