@@ -12,19 +12,33 @@ body {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  align-items: center;
+  box-sizing: border-box;
 }
 .sidebar button {
   margin: 5px 0;
-  padding: 10px;
-  background-color: #556b2f;
-  color: white;
+  padding: 5px;
+  background-color: transparent;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  border-radius: 4px;
+  outline: none;
 }
-.sidebar button:hover {
-  background-color: #6b8e23;
+.sidebar button img {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+  transition: transform 0.2s;
+}
+.sidebar button:hover img {
+  transform: scale(1.1);
+}
+#cashDisplay {
+  margin-top: 15px;
+  color: #f0fff0;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-shadow: 1px 1px 2px #224400;
+  user-select: none;
 }
 .game-container {
   flex: 1;
@@ -42,6 +56,7 @@ body {
   margin: auto;
   background-color: #9fcd7e;
   box-shadow: inset 0 0 20px #5c8a17;
+  cursor: crosshair;
 }
 .fence {
   position: absolute;
@@ -69,10 +84,15 @@ body {
 }
 .garden-item {
   position: absolute;
-  width: 48px;
-  height: 48px;
   cursor: pointer;
   image-rendering: pixelated;
+  user-select: none;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  transform-origin: bottom center;
+}
+.garden-item.selected {
+  border-color: #6b8e23;
 }
 .shop-item {
   width: 48px;
