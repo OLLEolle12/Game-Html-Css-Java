@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let selectedShopItem = null;
   let selectedGardenItem = null;
-  let cash = 0;
+  let cash = 50.00;  // Start with 50 bucks
   let plantedItems = [];
 
   // Pixel art images (your links)
@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.innerHTML = '<h2>Shop</h2><div id="shopItemsContainer"></div>';
     const container = document.getElementById('shopItemsContainer');
     shopItems.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.classList.add('shop-item-container');
+
       const img = document.createElement('img');
       img.src = item.img;
       img.alt = item.name;
@@ -56,7 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.shop-item').forEach(el => el.classList.remove('selected'));
         img.classList.add('selected');
       };
-      container.appendChild(img);
+
+      const priceTag = document.createElement('div');
+      priceTag.className = 'shop-item-price';
+      priceTag.textContent = `$${item.price}`;
+
+      div.appendChild(img);
+      div.appendChild(priceTag);
+      container.appendChild(div);
     });
     menu.classList.add('open');
   }
@@ -93,119 +103,110 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const rect = garden.getBoundingClientRect();
     let x = e.clientX - rect.left - 24; // center image 48/2=24
-    let y = e.clientY - rect.top - 48;  // plant bottom aligns with click
+    let y = e.clientY - rect.top - 24;
 
-    // Clamp position inside garden
-    x = Math.max(12, Math.min(x, garden.clientWidth - 60));
-    y = Math.max(12, Math.min(y, garden.clientHeight - 60));
-
-    // Check if enough cash
     if (cash < selectedShopItem.price) {
       alert('Not enough cash!');
       return;
     }
+
     cash -= selectedShopItem.price;
     updateCashDisplay();
 
-    const img = document.createElement('img');
-    img.src = selectedShopItem.img;
-    img.alt = selectedShopItem.name;
-    img.title = selectedShopItem.name;
-    img.classList.add('garden-item');
-    img.style.left = x + 'px';
-    img.style.top = y + 'px';
-    img.style.width = '24px';  // start small (half size)
-    img.style.height = '48px';
-    img.style.transformOrigin = 'bottom center';
+    const item = document.createElement('img');
+    item.src = selectedShopItem.img;
+    item.className = 'garden-item';
+    item.style.left = `${x}px`;
+    item.style.top = `${y}px`;
+    item.title = selectedShopItem.name + " (growing)";
+    item.style.transform = 'scale(0.4)';
 
-    // Custom data attributes
-    const plant = {
-      element: img,
-      type: selectedShopItem.name,
-      plantedAt: Date.now(),
-      price: selectedShopItem.price,
+    // Plant data
+    const plantData = {
+      element: item,
+      name: selectedShopItem.name,
       growthRate: selectedShopItem.growthRate,
-      size: 0.5, // starts small
-      x, y
+      growth: 0,
+      price: selectedShopItem.price,
+      selected: false
     };
-    plantedItems.push(plant);
 
     // Select plant on click
-    img.addEventListener('click', (evt) => {
+    item.addEventListener('click', (evt) => {
       evt.stopPropagation();
-      if (selectedGardenItem) {
-        selectedGardenItem.element.classList.remove('selected');
-      }
-      selectedGardenItem = plant;
-      plant.element.classList.add('selected');
+      if (selectedGardenItem) selectedGardenItem.element.classList.remove('selected');
+      selectedGardenItem = plantData;
+      plantData.element.classList.add('selected');
     });
 
-    garden.appendChild(img);
-    closeMenu();
+    plantedItems.push(plantData);
+    garden.appendChild(item);
   });
 
-  // Sell selected plant for money based on growth and time
+  // Deselect garden item when clicking outside
+  garden.addEventListener('click', () => {
+    if (selectedGardenItem) {
+      selectedGardenItem.element.classList.remove('selected');
+      selectedGardenItem = null;
+    }
+  });
+
+  // Sell selected plant
   sellBtn.addEventListener('click', () => {
     if (!selectedGardenItem) {
-      alert('Select a plant to sell!');
+      alert('Select a plant in the garden to sell!');
       return;
     }
-    const plant = selectedGardenItem;
-    const now = Date.now();
-    const elapsedHours = (now - plant.plantedAt) / (1000 * 60 * 60);
-    const growthMultiplier = Math.min(2, 0.5 + elapsedHours * 0.2); // max 2x price growth over time
-    const sellPrice = plant.price * growthMultiplier;
+
+    // Calculate sell price: 70% of original * growth progress (max 1)
+    const growthMultiplier = Math.min(selectedGardenItem.growth, 1);
+    const sellPrice = selectedGardenItem.price * 0.7 * growthMultiplier;
+
+    if (sellPrice < 0.01) {
+      alert("Plant hasn't grown enough to sell!");
+      return;
+    }
 
     cash += sellPrice;
     updateCashDisplay();
 
-    garden.removeChild(plant.element);
-    plantedItems = plantedItems.filter(p => p !== plant);
+    // Remove from garden and plantedItems array
+    selectedGardenItem.element.remove();
+    plantedItems = plantedItems.filter(p => p !== selectedGardenItem);
     selectedGardenItem = null;
   });
 
-  // Animate growth every 100ms
-  function growPlants() {
+  // Update growth and scale every 100ms
+  setInterval(() => {
     plantedItems.forEach(plant => {
-      if (plant.size < 1.5) {
-        plant.size += plant.growthRate;
-        plant.element.style.width = 24 * plant.size + 'px';
-        plant.element.style.height = 48 * plant.size + 'px';
+      if (plant.growth < 1) {
+        plant.growth += plant.growthRate;
+        if (plant.growth > 1) plant.growth = 1;
       }
+      // Scale plant from 0.4 to 1.0 based on growth progress
+      const scale = 0.4 + 0.6 * plant.growth;
+      plant.element.style.transform = `scale(${scale.toFixed(2)})`;
+      plant.element.title = `${plant.name} (Growth: ${(plant.growth*100).toFixed(0)}%)`;
     });
-    requestAnimationFrame(growPlants);
-  }
-  growPlants();
+  }, 100);
 
-  // Buttons handlers
-  shopBtn.addEventListener('click', () => {
-    showShop();
-  });
-  inventoryBtn.addEventListener('click', () => {
-    showInventory();
-  });
-  tasksBtn.addEventListener('click', () => {
-    showTasks();
-  });
-  achievementsBtn.addEventListener('click', () => {
-    showAchievements();
-  });
-
-  // Close menu clicking outside
-  document.addEventListener('click', (e) => {
-    if (!menu.contains(e.target) &&
-        !shopBtn.contains(e.target) &&
-        !inventoryBtn.contains(e.target) &&
-        !tasksBtn.contains(e.target) &&
-        !achievementsBtn.contains(e.target) &&
-        !sellBtn.contains(e.target)) {
-      closeMenu();
-      if(selectedGardenItem) {
-        selectedGardenItem.element.classList.remove('selected');
-        selectedGardenItem = null;
-      }
-    }
-  });
+  // Button events
+  shopBtn.onclick = () => {
+    if (menu.classList.contains('open')) closeMenu();
+    else showShop();
+  };
+  inventoryBtn.onclick = () => {
+    if (menu.classList.contains('open')) closeMenu();
+    else showInventory();
+  };
+  tasksBtn.onclick = () => {
+    if (menu.classList.contains('open')) closeMenu();
+    else showTasks();
+  };
+  achievementsBtn.onclick = () => {
+    if (menu.classList.contains('open')) closeMenu();
+    else showAchievements();
+  };
 
   updateCashDisplay();
 });
