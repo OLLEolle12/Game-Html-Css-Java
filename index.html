@@ -1,33 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Garden Tycoon</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Garden</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="sidebar">
-    <button id="shopBtn" title="Shop"><img src="https://i.imgur.com/NzXI6Hm.png" alt="Shop" /></button>
-    <button id="inventoryBtn" title="Inventory"><img src="https://i.imgur.com/PbUmbg4.png" alt="Inventory" /></button>
-    <button id="tasksBtn" title="Tasks"><img src="https://i.imgur.com/gZG6Agg.png" alt="Tasks" /></button>
-    <button id="achievementsBtn" title="Achievements"><img src="https://i.imgur.com/dVtJQ1Z.png" alt="Achievements" /></button>
-    <button id="sellBtn" title="Sell"><img src="https://i.imgur.com/0HpwASu.png" alt="Sell" /></button>
-    <div id="cashDisplay">💰 Cash: $50.00</div>
-    <div id="titleDisplay">🏅 Title: Beginner Gardener</div>
-    <div id="weatherArea">
-      <img id="weatherIcon" src="https://i.imgur.com/YBjeiNS.png" alt="Weather" />
-      <span id="dayTime">Day</span>
-    </div>
-  </div>
+  <div class="container">
 
-  <div class="game-container">
-    <div id="garden" class="garden"></div>
-  </div>
+    <aside class="sidebar">
+      <button id="shopBtn" class="side-btn" title="Shop">
+        <img src="https://i.imgur.com/NzXI6Hm.png" alt="Shop" />
+      </button>
+      <button id="inventoryBtn" class="side-btn" title="Inventory">
+        <img src="https://i.imgur.com/PbUmbg4.png" alt="Inventory" />
+      </button>
+      <button id="tasksBtn" class="side-btn" title="Tasks">
+        <img src="https://i.imgur.com/gZG6Agg.png" alt="Tasks" />
+      </button>
+      <button id="achievementsBtn" class="side-btn" title="Achievements">
+        <img src="https://i.imgur.com/dVtJQ1Z.png" alt="Achievements" />
+      </button>
+      <button id="sellBtn" class="side-btn" title="Sell Plants">
+        <img src="https://i.imgur.com/0HpwASu.png" alt="Sell" />
+      </button>
+    </aside>
 
-  <div id="menu" class="menu">
-    <button id="closeMenu" class="close-btn">×</button>
-    <div id="menuContent"></div>
+    <main class="game-area">
+      <header class="topbar">
+        <div id="cashDisplay">💰 Cash: $0.00</div>
+        <div id="titleDisplay">🏅 Beginner Gardener</div>
+      </header>
+
+      <section class="garden-room">
+        <div class="fence"></div>
+        <div class="grass"></div>
+        <div id="planting-area"></div>
+      </section>
+
+      <!-- UI windows -->
+      <div id="uiWindows">
+        <div id="shop" class="ui-window">
+          <h2>Shop</h2>
+          <div id="shopItems" class="items-grid"></div>
+          <button class="close-btn">Close</button>
+        </div>
+
+        <div id="inventory" class="ui-window">
+          <h2>Inventory</h2>
+          <div id="inventoryItems" class="items-grid"></div>
+          <button class="close-btn">Close</button>
+        </div>
+
+        <div id="tasks" class="ui-window">
+          <h2>Tasks</h2>
+          <div id="tasksList"></div>
+          <button class="close-btn">Close</button>
+        </div>
+
+        <div id="achievements" class="ui-window">
+          <h2>Achievements</h2>
+          <div id="achievementsList"></div>
+          <button class="close-btn">Close</button>
+        </div>
+
+        <div id="sell" class="ui-window">
+          <h2>Sell Plants</h2>
+          <div id="sellList"></div>
+          <button class="close-btn">Close</button>
+        </div>
+      </div>
+
+    </main>
+
   </div>
 
   <script src="script.js"></script>
