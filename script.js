@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const cashDisplay = document.getElementById('cashDisplay');
 
   let cash = 50.00;
-  let selectedItem = null;
   let plantedItems = [];
 
   const shopItems = [
@@ -17,31 +16,33 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: 'Strawberry', img: 'https://i.imgur.com/JvBb4Fz.png', price: 20 }
   ];
 
-  function updateCash() {
-    cashDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+  function updateCashDisplay() {
+    cashDisplay.textContent = `💰 Cash: $${cash.toFixed(2)}`;
   }
 
-  function createShop() {
+  function showShop() {
     menu.innerHTML = '<h2>Shop</h2>';
     shopItems.forEach(item => {
-      const btn = document.createElement('div');
-      btn.classList.add('shop-item');
-      btn.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
-        <p>${item.name} - $${item.price}</p>
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('shop-item');
+      itemDiv.innerHTML = `
+        <img src="${item.img}" alt="${item.name}" width="64" height="64">
+        <span>${item.name} - $${item.price}</span>
       `;
-      btn.onclick = () => {
-        if (cash >= item.price) {
-          cash -= item.price;
-          updateCash();
-          plantItem(item);
-        } else {
-          alert("Not enough cash!");
-        }
-      };
-      menu.appendChild(btn);
+      itemDiv.onclick = () => buyPlant(item);
+      menu.appendChild(itemDiv);
     });
     menu.classList.add('open');
+  }
+
+  function buyPlant(item) {
+    if (cash >= item.price) {
+      cash -= item.price;
+      updateCashDisplay();
+      plantItem(item);
+    } else {
+      alert("Not enough cash!");
+    }
   }
 
   function plantItem(item) {
@@ -51,20 +52,38 @@ document.addEventListener('DOMContentLoaded', () => {
     plant.style.left = `${Math.random() * 700}px`;
     plant.style.top = `${Math.random() * 500}px`;
     garden.appendChild(plant);
-    plantedItems.push({ element: plant, price: item.price });
+
+    let size = 1;
+    let growth = 0.05;
+
+    const grow = setInterval(() => {
+      size += growth;
+      if (size > 2) growth = 0.02;
+      if (size > 3) growth = 0;
+      plant.style.transform = `scale(${size})`;
+
+      if (size >= 3.5) {
+        clearInterval(grow);
+      }
+    }, 1000);
+
+    plantedItems.push({ element: plant, item, size });
   }
 
-  sellBtn.addEventListener('click', () => {
+  function sellPlant() {
     if (plantedItems.length > 0) {
       const soldItem = plantedItems.pop();
-      cash += soldItem.price * 0.7;
-      updateCash();
+      const sellPrice = soldItem.item.price * (1.5 + Math.random());
+      cash += sellPrice;
+      updateCashDisplay();
       soldItem.element.remove();
+      alert(`Sold for $${sellPrice.toFixed(2)}`);
     } else {
       alert("No plants to sell!");
     }
-  });
+  }
 
-  shopBtn.addEventListener('click', createShop);
-  updateCash();
+  shopBtn.addEventListener('click', showShop);
+  sellBtn.addEventListener('click', sellPlant);
+  updateCashDisplay();
 });
