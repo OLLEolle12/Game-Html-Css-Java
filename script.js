@@ -1,5 +1,6 @@
 const garden = document.getElementById('garden');
 const menu = document.getElementById('menu');
+const menuContent = document.getElementById('menuContent');
 const cashDisplay = document.getElementById('cashDisplay');
 const titleDisplay = document.getElementById('titleDisplay');
 const weatherIcon = document.getElementById('weatherIcon');
@@ -10,52 +11,74 @@ const inventoryBtn = document.getElementById('inventoryBtn');
 const tasksBtn = document.getElementById('tasksBtn');
 const achievementsBtn = document.getElementById('achievementsBtn');
 const sellBtn = document.getElementById('sellBtn');
+const closeMenuBtn = document.getElementById('closeMenu');
 
-let cash = 50;
-let titleLevel = 0;
-let titles = ['Beginner Gardener', 'Skilled Farmer', 'Master Gardener'];
-let plants = [];
-let inventory = {};
-let marketMultiplier = 1;
+let cash = 50; // start cash
+let title = 'Beginner Gardener';
+
 let weather = 'day'; // day, night, rain, snow
-let dayPhase = 0; // increments for day-night cycle
-let decorations = [];
-let gardenPlots = 5;
-let planterBox = 'wood'; // only wood for now
-let growthIntervals = [];
+const weatherIcons = {
+  day: 'https://i.imgur.com/YBjeiNS.png',
+  night: 'https://i.imgur.com/1xkedqc.png',
+  rain: 'https://i.imgur.com/6ezFfyu.png',
+  snow: 'https://i.imgur.com/ZL41Mpb.png'
+};
 
 const plantTypes = {
-  strawberry: {
-    name: 'Strawberry',
-    img: 'https://i.imgur.com/JvBb4Fz.png',
-    cost: 10,
-    growthRate: 0.01,
-    sellMultiplier: 1.5,
-    maxSize: 3,
-    bigSize: 2,
-    superBigSize: 2.8
-  },
   blueberry: {
     name: 'Blueberry Bush',
+    cost: 15,
     img: 'https://i.imgur.com/wkfyJ9a.png',
-    cost: 20,
-    growthRate: 0.008,
-    sellMultiplier: 1.7,
-    maxSize: 2.5,
-    bigSize: 1.8,
-    superBigSize: 2.4
+    growthRate: 0.015,
+    maxSize: 1,
+    bigSize: 0.7,
+    superBigSize: 0.9,
+    sellMultiplier: 1.5
+  },
+  tree: {
+    name: 'Tree',
+    cost: 30,
+    img: 'https://i.imgur.com/Gv7EYn5.png',
+    growthRate: 0.007,
+    maxSize: 1,
+    bigSize: 0.8,
+    superBigSize: 0.95,
+    sellMultiplier: 1.7
+  },
+  bush: {
+    name: 'Bush',
+    cost: 10,
+    img: 'https://i.imgur.com/tbXugY5.png',
+    growthRate: 0.02,
+    maxSize: 1,
+    bigSize: 0.65,
+    superBigSize: 0.85,
+    sellMultiplier: 1.4
   },
   sunflower: {
     name: 'Sunflower',
+    cost: 7,
     img: 'https://i.imgur.com/XwhrLHL.png',
-    cost: 15,
-    growthRate: 0.009,
-    sellMultiplier: 1.6,
-    maxSize: 3.2,
-    bigSize: 2.1,
-    superBigSize: 2.9
+    growthRate: 0.03,
+    maxSize: 1,
+    bigSize: 0.7,
+    superBigSize: 0.9,
+    sellMultiplier: 1.3
+  },
+  strawberry: {
+    name: 'Strawberry Plant',
+    cost: 20,
+    img: 'https://i.imgur.com/JvBb4Fz.png',
+    growthRate: 0.012,
+    maxSize: 1,
+    bigSize: 0.7,
+    superBigSize: 0.9,
+    sellMultiplier: 1.6
   }
 };
+
+let plants = [];
+let inventory = {};
 
 function updateCash(amount) {
   cash += amount;
@@ -65,24 +88,18 @@ function updateCash(amount) {
 }
 
 function updateTitle() {
-  if (cash >= 500) titleLevel = 2;
-  else if (cash >= 200) titleLevel = 1;
-  else titleLevel = 0;
-  titleDisplay.textContent = `🏅 Title: ${titles[titleLevel]}`;
+  if (cash >= 1000) title = 'Master Gardener';
+  else if (cash >= 500) title = 'Green Thumb';
+  else if (cash >= 200) title = 'Novice Planter';
+  else if (cash >= 100) title = 'Growing Enthusiast';
+  else title = 'Beginner Gardener';
+  titleDisplay.textContent = `🏅 Title: ${title}`;
 }
 
 function changeWeather() {
-  const weathers = ['day', 'night', 'rain', 'snow'];
-  dayPhase++;
-  if(dayPhase >= weathers.length) dayPhase = 0;
-  weather = weathers[dayPhase];
-  const icons = {
-    day: 'https://i.imgur.com/YBjeiNS.png',
-    night: 'https://i.imgur.com/1xkedqc.png',
-    rain: 'https://i.imgur.com/6ezFfyu.png',
-    snow: 'https://i.imgur.com/ZL41Mpb.png'
-  };
-  weatherIcon.src = icons[weather];
+  const options = ['day', 'night', 'rain', 'snow'];
+  weather = options[Math.floor(Math.random() * options.length)];
+  weatherIcon.src = weatherIcons[weather];
   dayTime.textContent = weather.charAt(0).toUpperCase() + weather.slice(1);
 }
 
@@ -98,7 +115,7 @@ function createPlant(typeKey, x, y) {
   const plant = {
     id: Date.now(),
     type: typeKey,
-    size: 0.2,
+    size: 0.15,
     x,
     y,
     plantedAt: Date.now(),
@@ -151,79 +168,88 @@ function harvestPlant(id) {
   const index = plants.findIndex(p => p.id === id);
   if (index === -1) return;
   const plant = plants[index];
-  let multiplier = 1.5; // base multiplier
 
+  // Calculate multiplier based on size
+  let multiplier = 1.5; // base multiplier
   if (plant.size >= plantTypes[plant.type].superBigSize) multiplier = 15;
   else if (plant.size >= plantTypes[plant.type].bigSize) multiplier = 3;
 
   const basePrice = plantTypes[plant.type].cost;
   const sellPrice = basePrice * multiplier;
-  updateCash(sellPrice);
 
+  updateCash(sellPrice);
   plants.splice(index, 1);
   renderGarden();
 }
 
 function openMenu(type) {
-  menu.innerHTML = '';
+  menuContent.innerHTML = '';
   menu.classList.add('open');
 
   if (type === 'shop') {
-    menu.innerHTML = `<h2>Shop</h2>`;
+    menuContent.innerHTML = `<h2>Shop</h2>`;
     for (const key in plantTypes) {
       const pt = plantTypes[key];
       const btn = document.createElement('button');
       btn.className = 'button';
-      btn.textContent = `${pt.name} - $${pt.cost.toFixed(2)}`;
+      btn.innerHTML = `<img src="${pt.img}" alt="${pt.name}" style="width:40px; height:40px; vertical-align:middle; margin-right:10px; filter: drop-shadow(1px 1px 1px #0007);"> ${pt.name} - $${pt.cost.toFixed(2)}`;
       btn.onclick = () => {
-        createPlant(key, Math.random() * (garden.clientWidth - 50), 20);
+        const x = Math.random() * (garden.clientWidth - 60);
+        createPlant(key, x, 20);
       };
-      menu.appendChild(btn);
+      menuContent.appendChild(btn);
     }
   } else if (type === 'inventory') {
-    menu.innerHTML = `<h2>Inventory</h2>`;
+    menuContent.innerHTML = `<h2>Inventory</h2>`;
+    let hasItems = false;
     for (const key in inventory) {
       if (inventory[key] > 0) {
+        hasItems = true;
         const div = document.createElement('div');
         div.className = 'inventory-item';
         div.innerHTML = `<img src="${plantTypes[key].img}" alt="${key}" /> <span>${plantTypes[key].name} x${inventory[key]}</span>`;
-        menu.appendChild(div);
+        menuContent.appendChild(div);
       }
     }
-    if (Object.keys(inventory).length === 0) menu.innerHTML += '<p>No plants in inventory.</p>';
+    if (!hasItems) {
+      menuContent.innerHTML += '<p>No plants in inventory.</p>';
+    }
   } else if (type === 'tasks') {
-    menu.innerHTML = `<h2>Tasks</h2><p>Water your plants regularly! Harvest big plants for more money!</p>`;
+    menuContent.innerHTML = `
+      <h2>Tasks</h2>
+      <ul>
+        <li>Water your plants regularly.</li>
+        <li>Fertilize for faster growth.</li>
+        <li>Harvest big plants for more cash.</li>
+        <li>Expand your garden soon!</li>
+      </ul>
+    `;
   } else if (type === 'achievements') {
-    menu.innerHTML = `<h2>Achievements</h2><p>Coming soon!</p>`;
+    menuContent.innerHTML = `<h2>Achievements</h2><p>Coming soon!</p>`;
   } else if (type === 'sell') {
-    menu.innerHTML = `<h2>Sell Plants</h2><p>Click plants in the garden to harvest and sell.</p>`;
+    menuContent.innerHTML = `<h2>Sell Plants</h2><p>Click plants in the garden to harvest and sell them for profit.</p>`;
   }
 
-  // Add close button
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'button';
-  closeBtn.textContent = 'Close';
-  closeBtn.onclick = () => {
-    menu.classList.remove('open');
-  };
-  menu.appendChild(closeBtn);
 }
 
-// Event Listeners for buttons
+function closeMenu() {
+  menu.classList.remove('open');
+}
+
+// Button event listeners
 shopBtn.onclick = () => openMenu('shop');
 inventoryBtn.onclick = () => openMenu('inventory');
 tasksBtn.onclick = () => openMenu('tasks');
 achievementsBtn.onclick = () => openMenu('achievements');
 sellBtn.onclick = () => openMenu('sell');
+closeMenuBtn.onclick = closeMenu;
 
-setInterval(() => {
-  growPlants();
-}, 3000); // growth every 3 seconds
-
-setInterval(() => {
-  changeWeather();
-}, 30000); // weather change every 30 seconds
+// Periodic growth and weather change
+setInterval(() => growPlants(), 3000);
+setInterval(() => changeWeather(), 30000);
 
 // Initial setup
 renderGarden();
 updateCash(0);
+changeWeather();
+
