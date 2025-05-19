@@ -6,139 +6,77 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
 .sidebar {
-  width: 170px;
+  width: 200px;
   background-color: #6b8e23;
   display: flex;
   flex-direction: column;
   padding: 10px;
   align-items: center;
-  box-sizing: border-box;
 }
+
 .sidebar button {
   margin: 10px 0;
   padding: 5px;
   background-color: transparent;
   border: none;
   cursor: pointer;
-  outline: none;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .sidebar button img {
-  width: 64px;
-  height: 64px;
+  width: 128px;
+  height: 128px;
   image-rendering: pixelated;
-  transition: transform 0.2s;
 }
-.sidebar button:hover img {
-  transform: scale(1.1);
-}
+
 .icon-label {
   margin-top: 5px;
-  font-size: 14px;
+  font-size: 18px;
   color: #f0fff0;
-  user-select: none;
-  text-shadow: 1px 1px 2px #224400;
 }
+
 #cashDisplay {
   margin-top: 20px;
-  color: #f0fff0;
-  font-weight: bold;
-  font-size: 1.3em;
-  text-shadow: 1px 1px 2px #224400;
-  user-select: none;
+  color: #fff;
+  font-size: 1.5em;
   text-align: center;
 }
+
 .game-container {
   flex: 1;
   position: relative;
   background-color: #7cfc00;
   margin: 20px;
-  border: 2px solid #556b2f;
-  border-radius: 8px;
-  overflow: hidden;
 }
+
 .garden {
-  position: relative;
   width: 800px;
   height: 600px;
-  margin: auto;
   background-color: #9fcd7e;
-  box-shadow: inset 0 0 20px #5c8a17;
-  cursor: crosshair;
+  border: 3px solid #556b2f;
+  margin: auto;
+  position: relative;
 }
-.fence {
+
+.garden-item {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border: 12px solid #8b4513;
-  box-sizing: border-box;
-  pointer-events: none;
-  border-radius: 12px;
+  cursor: pointer;
 }
+
 .menu {
   position: absolute;
   top: 0;
   right: -320px;
   width: 320px;
-  height: 100%;
   background-color: #f0fff0;
-  box-shadow: -4px 0 10px rgba(0,0,0,0.4);
-  transition: right 0.3s ease;
+  transition: right 0.3s;
   padding: 20px;
-  overflow-y: auto;
-  font-family: monospace;
 }
+
 .menu.open {
   right: 0;
-}
-.garden-item {
-  position: absolute;
-  cursor: pointer;
-  image-rendering: pixelated;
-  user-select: none;
-  border: 2px solid transparent;
-  transition: border-color 0.2s;
-  transform-origin: bottom center;
-}
-.garden-item.selected {
-  border-color: #6b8e23;
-}
-.shop-item {
-  width: 48px;
-  height: 48px;
-  margin: 10px 10px 5px 10px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  image-rendering: pixelated;
-  transition: border-color 0.3s;
-}
-.shop-item.selected {
-  border-color: #6b8e23;
-}
-.shop-item-container {
-  display: inline-block;
-  text-align: center;
-  width: 70px;
-}
-.shop-item-price {
-  font-size: 12px;
-  color: #356c09;
-  margin-top: 3px;
-  user-select: none;
-}
-h2 {
-  margin-top: 0;
-  font-size: 1.5em;
-  color: #356c09;
-}
-.log {
-  background: #d4f1c5;
-  padding: 10px;
-  border-radius: 8px;
-  max-height: 150px;
-  overflow-y: auto;
-  font-size: 0.9em;
-  color: #2a4d0d;
 }
