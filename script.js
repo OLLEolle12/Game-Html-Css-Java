@@ -1,84 +1,26 @@
-const garden = document.getElementById('garden');
-const menu = document.getElementById('menu');
-const menuContent = document.getElementById('menuContent');
 const cashDisplay = document.getElementById('cashDisplay');
 const titleDisplay = document.getElementById('titleDisplay');
-const weatherIcon = document.getElementById('weatherIcon');
-const dayTime = document.getElementById('dayTime');
+const plantingArea = document.getElementById('planting-area');
+
+const uiWindows = document.getElementById('uiWindows');
+const shopWindow = document.getElementById('shop');
+const inventoryWindow = document.getElementById('inventory');
+const tasksWindow = document.getElementById('tasks');
+const achievementsWindow = document.getElementById('achievements');
+const sellWindow = document.getElementById('sell');
 
 const shopBtn = document.getElementById('shopBtn');
 const inventoryBtn = document.getElementById('inventoryBtn');
 const tasksBtn = document.getElementById('tasksBtn');
 const achievementsBtn = document.getElementById('achievementsBtn');
 const sellBtn = document.getElementById('sellBtn');
-const closeMenuBtn = document.getElementById('closeMenu');
 
-let cash = 50; // start cash
+const closeButtons = document.querySelectorAll('.close-btn');
+
+let cash = 50.00;
 let title = 'Beginner Gardener';
-
-let weather = 'day'; // day, night, rain, snow
-const weatherIcons = {
-  day: 'https://i.imgur.com/YBjeiNS.png',
-  night: 'https://i.imgur.com/1xkedqc.png',
-  rain: 'https://i.imgur.com/6ezFfyu.png',
-  snow: 'https://i.imgur.com/ZL41Mpb.png'
-};
-
-const plantTypes = {
-  blueberry: {
-    name: 'Blueberry Bush',
-    cost: 15,
-    img: 'https://i.imgur.com/wkfyJ9a.png',
-    growthRate: 0.015,
-    maxSize: 1,
-    bigSize: 0.7,
-    superBigSize: 0.9,
-    sellMultiplier: 1.5
-  },
-  tree: {
-    name: 'Tree',
-    cost: 30,
-    img: 'https://i.imgur.com/Gv7EYn5.png',
-    growthRate: 0.007,
-    maxSize: 1,
-    bigSize: 0.8,
-    superBigSize: 0.95,
-    sellMultiplier: 1.7
-  },
-  bush: {
-    name: 'Bush',
-    cost: 10,
-    img: 'https://i.imgur.com/tbXugY5.png',
-    growthRate: 0.02,
-    maxSize: 1,
-    bigSize: 0.65,
-    superBigSize: 0.85,
-    sellMultiplier: 1.4
-  },
-  sunflower: {
-    name: 'Sunflower',
-    cost: 7,
-    img: 'https://i.imgur.com/XwhrLHL.png',
-    growthRate: 0.03,
-    maxSize: 1,
-    bigSize: 0.7,
-    superBigSize: 0.9,
-    sellMultiplier: 1.3
-  },
-  strawberry: {
-    name: 'Strawberry Plant',
-    cost: 20,
-    img: 'https://i.imgur.com/JvBb4Fz.png',
-    growthRate: 0.012,
-    maxSize: 1,
-    bigSize: 0.7,
-    superBigSize: 0.9,
-    sellMultiplier: 1.6
-  }
-};
-
+let inventory = [];
 let plants = [];
-let inventory = {};
 
 function updateCash(amount) {
   cash += amount;
@@ -88,168 +30,219 @@ function updateCash(amount) {
 }
 
 function updateTitle() {
-  if (cash >= 1000) title = 'Master Gardener';
-  else if (cash >= 500) title = 'Green Thumb';
-  else if (cash >= 200) title = 'Novice Planter';
-  else if (cash >= 100) title = 'Growing Enthusiast';
-  else title = 'Beginner Gardener';
-  titleDisplay.textContent = `🏅 Title: ${title}`;
+  if (cash >= 500) title = "Master Gardener 🏅";
+  else if (cash >= 250) title = "Expert Gardener 🌿";
+  else if (cash >= 100) title = "Skilled Gardener 🌱";
+  else title = "Beginner Gardener";
+  titleDisplay.textContent = `🏅 ${title}`;
 }
 
-function changeWeather() {
-  const options = ['day', 'night', 'rain', 'snow'];
-  weather = options[Math.floor(Math.random() * options.length)];
-  weatherIcon.src = weatherIcons[weather];
-  dayTime.textContent = weather.charAt(0).toUpperCase() + weather.slice(1);
+function openUI(windowToOpen) {
+  [...uiWindows.children].forEach(win => {
+    if (win === windowToOpen) {
+      win.style.display = 'block';
+      uiWindows.classList.add('active');
+    } else {
+      win.style.display = 'none';
+    }
+  });
 }
 
-function createPlant(typeKey, x, y) {
-  const type = plantTypes[typeKey];
-  if (!type) return;
-  if (cash < type.cost) {
-    alert('Not enough cash!');
+function closeUI() {
+  uiWindows.classList.remove('active');
+  [...uiWindows.children].forEach(win => win.style.display = 'none');
+}
+
+// Plant data
+const plantTypes = [
+  {id:'blueberry', name:'Blueberry Bush', cost:10, img:'https://i.imgur.com/wkfyJ9a.png', growTime: 60, sellMultiplier: 1.5},
+  {id:'tree', name:'Tree', cost:20, img:'https://i.imgur.com/Gv7EYn5.png', growTime: 120, sellMultiplier: 3},
+  {id:'bush', name:'Bush', cost:15, img:'https://i.imgur.com/tbXugY5.png', growTime: 90, sellMultiplier: 2},
+  {id:'sunflower', name:'Sunflower', cost:8, img:'https://i.imgur.com/XwhrLHL.png', growTime: 45, sellMultiplier: 1.5},
+  {id:'strawberry', name:'Strawberry Plant', cost:12, img:'https://i.imgur.com/JvBb4Fz.png', growTime: 80, sellMultiplier: 2},
+];
+
+// Render shop items
+function renderShop() {
+  const shopItems = document.getElementById('shopItems');
+  shopItems.innerHTML = '';
+  plantTypes.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" />
+      <div>${p.name}</div>
+      <div style="font-size:9px;color:#cdf5b3;">$${p.cost.toFixed(2)}</div>
+    `;
+    item.onclick = () => {
+      if(cash >= p.cost) {
+        updateCash(-p.cost);
+        addPlant(p);
+        alert(`You bought a ${p.name}!`);
+      } else {
+        alert("Not enough cash!");
+      }
+    };
+    shopItems.appendChild(item);
+  });
+}
+
+// Add plant to garden
+function addPlant(plantType) {
+  const plant = {
+    id: plantType.id + '_' + Date.now(),
+    type: plantType,
+    size: 0.2, // start small
+    plantedAt: Date.now(),
+    growthStage: 0, // 0 to 4 stages
+    x: Math.random() * (plantingArea.clientWidth - 48),
+    y: Math.random() * (plantingArea.clientHeight - 48),
+    element: null
+  };
+  plants.push(plant);
+  renderPlant(plant);
+}
+
+function renderPlant(plant) {
+  const div = document.createElement('div');
+  div.className = 'plant small';
+  div.style.position = 'absolute';
+  div.style.left = plant.x + 'px';
+  div.style.top = plant.y + 'px';
+  div.style.zIndex = 10;
+  div.style.cursor = 'pointer';
+  div.style.width = '48px';
+  div.style.height = '48px';
+  div.style.backgroundImage = `url(${plant.type.img})`;
+  div.style.backgroundSize = 'contain';
+  div.style.backgroundRepeat = 'no-repeat';
+  div.title = `${plant.type.name}`;
+  div.onclick = () => harvestPlant(plant.id);
+  plantingArea.appendChild(div);
+  plant.element = div;
+}
+
+// Growth update loop (every 5 seconds)
+function growPlants() {
+  const now = Date.now();
+  plants.forEach(plant => {
+    const elapsed = (now - plant.plantedAt) / 1000; // seconds
+    let stage = Math.min(4, Math.floor(elapsed / (plant.type.growTime / 4)));
+
+    if(stage > plant.growthStage) {
+      plant.growthStage = stage;
+      updatePlantVisual(plant);
+    }
+  });
+}
+
+function updatePlantVisual(plant) {
+  if (!plant.element) return;
+  plant.element.classList.remove('small', 'medium', 'large', 'super-large');
+
+  if (plant.growthStage === 0) plant.element.classList.add('small');
+  else if (plant.growthStage === 1) plant.element.classList.add('medium');
+  else if (plant.growthStage === 2 || plant.growthStage === 3) plant.element.classList.add('large');
+  else if (plant.growthStage === 4) plant.element.classList.add('super-large');
+}
+
+// Harvest plant (sell)
+function harvestPlant(id) {
+  const plantIndex = plants.findIndex(p => p.id === id);
+  if(plantIndex === -1) return;
+
+  const plant = plants[plantIndex];
+  if(plant.growthStage < 4) {
+    alert('This plant is not fully grown yet!');
     return;
   }
-  updateCash(-type.cost);
-
-  const plant = {
-    id: Date.now(),
-    type: typeKey,
-    size: 0.15,
-    x,
-    y,
-    plantedAt: Date.now(),
-    watered: false,
-    fertilized: false
-  };
-
-  plants.push(plant);
-  inventory[typeKey] = (inventory[typeKey] || 0) + 1;
-  renderGarden();
-}
-
-function renderGarden() {
-  garden.innerHTML = '';
-  for (const plant of plants) {
-    const plantEl = document.createElement('img');
-    plantEl.src = plantTypes[plant.type].img;
-    plantEl.className = 'plant';
-    plantEl.style.left = `${plant.x}px`;
-    plantEl.style.bottom = `${plant.y}px`;
-    plantEl.style.transform = `scale(${plant.size})`;
-    plantEl.title = `${plantTypes[plant.type].name} (${(plant.size * 100).toFixed(0)}%)`;
-    plantEl.onclick = () => harvestPlant(plant.id);
-    garden.appendChild(plantEl);
+  // Sell price = cost * multiplier * size factor
+  // size factor:
+  // 0.5 for medium, 1 for large, 1.5 for super large (match growth stage)
+  let sizeFactor = 1;
+  switch(plant.growthStage) {
+    case 1: sizeFactor = 0.5; break;
+    case 2: case 3: sizeFactor = 1; break;
+    case 4: sizeFactor = 1.5; break;
+    default: sizeFactor = 0.3; break;
   }
-}
-
-function growPlants() {
-  for (const plant of plants) {
-    const baseGrowth = plantTypes[plant.type].growthRate;
-
-    let growthMultiplier = 1;
-    if (weather === 'rain') growthMultiplier = 1.5;
-    else if (weather === 'snow') growthMultiplier = 0.7;
-    else if (weather === 'night') growthMultiplier = 0.6;
-
-    if (plant.watered) growthMultiplier += 0.3;
-    if (plant.fertilized) growthMultiplier += 0.5;
-
-    plant.size += baseGrowth * growthMultiplier;
-
-    const maxSize = plantTypes[plant.type].maxSize;
-
-    if (plant.size > maxSize) plant.size = maxSize;
-  }
-  renderGarden();
-}
-
-function harvestPlant(id) {
-  const index = plants.findIndex(p => p.id === id);
-  if (index === -1) return;
-  const plant = plants[index];
-
-  // Calculate multiplier based on size
-  let multiplier = 1.5; // base multiplier
-  if (plant.size >= plantTypes[plant.type].superBigSize) multiplier = 15;
-  else if (plant.size >= plantTypes[plant.type].bigSize) multiplier = 3;
-
-  const basePrice = plantTypes[plant.type].cost;
-  const sellPrice = basePrice * multiplier;
+  const sellPrice = plant.type.cost * plant.type.sellMultiplier * sizeFactor;
 
   updateCash(sellPrice);
-  plants.splice(index, 1);
-  renderGarden();
+  alert(`You sold your ${plant.type.name} for $${sellPrice.toFixed(2)}!`);
+  plantingArea.removeChild(plant.element);
+  plants.splice(plantIndex, 1);
+  renderSellList();
 }
 
-function openMenu(type) {
-  menuContent.innerHTML = '';
-  menu.classList.add('open');
-
-  if (type === 'shop') {
-    menuContent.innerHTML = `<h2>Shop</h2>`;
-    for (const key in plantTypes) {
-      const pt = plantTypes[key];
-      const btn = document.createElement('button');
-      btn.className = 'button';
-      btn.innerHTML = `<img src="${pt.img}" alt="${pt.name}" style="width:40px; height:40px; vertical-align:middle; margin-right:10px; filter: drop-shadow(1px 1px 1px #0007);"> ${pt.name} - $${pt.cost.toFixed(2)}`;
-      btn.onclick = () => {
-        const x = Math.random() * (garden.clientWidth - 60);
-        createPlant(key, x, 20);
-      };
-      menuContent.appendChild(btn);
-    }
-  } else if (type === 'inventory') {
-    menuContent.innerHTML = `<h2>Inventory</h2>`;
-    let hasItems = false;
-    for (const key in inventory) {
-      if (inventory[key] > 0) {
-        hasItems = true;
-        const div = document.createElement('div');
-        div.className = 'inventory-item';
-        div.innerHTML = `<img src="${plantTypes[key].img}" alt="${key}" /> <span>${plantTypes[key].name} x${inventory[key]}</span>`;
-        menuContent.appendChild(div);
-      }
-    }
-    if (!hasItems) {
-      menuContent.innerHTML += '<p>No plants in inventory.</p>';
-    }
-  } else if (type === 'tasks') {
-    menuContent.innerHTML = `
-      <h2>Tasks</h2>
-      <ul>
-        <li>Water your plants regularly.</li>
-        <li>Fertilize for faster growth.</li>
-        <li>Harvest big plants for more cash.</li>
-        <li>Expand your garden soon!</li>
-      </ul>
-    `;
-  } else if (type === 'achievements') {
-    menuContent.innerHTML = `<h2>Achievements</h2><p>Coming soon!</p>`;
-  } else if (type === 'sell') {
-    menuContent.innerHTML = `<h2>Sell Plants</h2><p>Click plants in the garden to harvest and sell them for profit.</p>`;
+// Sell UI
+function renderSellList() {
+  const sellList = document.getElementById('sellList');
+  sellList.innerHTML = '';
+  if(plants.length === 0) {
+    sellList.textContent = 'No plants to sell.';
+    return;
   }
-
+  plants.forEach(plant => {
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.style.cursor = 'pointer';
+    item.innerHTML = `
+      <img src="${plant.type.img}" alt="${plant.type.name}" />
+      <div>${plant.type.name}</div>
+      <div>Stage: ${plant.growthStage}</div>
+    `;
+    item.onclick = () => harvestPlant(plant.id);
+    sellList.appendChild(item);
+  });
 }
 
-function closeMenu() {
-  menu.classList.remove('open');
+// Inventory UI placeholder
+function renderInventory() {
+  const inventoryItems = document.getElementById('inventoryItems');
+  inventoryItems.innerHTML = '<div>No items yet.</div>';
 }
 
-// Button event listeners
-shopBtn.onclick = () => openMenu('shop');
-inventoryBtn.onclick = () => openMenu('inventory');
-tasksBtn.onclick = () => openMenu('tasks');
-achievementsBtn.onclick = () => openMenu('achievements');
-sellBtn.onclick = () => openMenu('sell');
-closeMenuBtn.onclick = closeMenu;
+// Tasks UI placeholder
+function renderTasks() {
+  const tasksList = document.getElementById('tasksList');
+  tasksList.innerHTML = '<div>Tasks coming soon!</div>';
+}
 
-// Periodic growth and weather change
-setInterval(() => growPlants(), 3000);
-setInterval(() => changeWeather(), 30000);
+// Achievements UI placeholder
+function renderAchievements() {
+  const achievementsList = document.getElementById('achievementsList');
+  achievementsList.innerHTML = '<div>Achievements coming soon!</div>';
+}
 
-// Initial setup
-renderGarden();
+// Button handlers
+shopBtn.onclick = () => {
+  renderShop();
+  openUI(shopWindow);
+};
+inventoryBtn.onclick = () => {
+  renderInventory();
+  openUI(inventoryWindow);
+};
+tasksBtn.onclick = () => {
+  renderTasks();
+  openUI(tasksWindow);
+};
+achievementsBtn.onclick = () => {
+  renderAchievements();
+  openUI(achievementsWindow);
+};
+sellBtn.onclick = () => {
+  renderSellList();
+  openUI(sellWindow);
+};
+
+// Close buttons
+closeButtons.forEach(btn => btn.onclick = closeUI);
+
+// Game loop
+setInterval(growPlants, 5000);
+
+// Initial display
 updateCash(0);
-changeWeather();
-
+renderShop();
