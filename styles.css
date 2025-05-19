@@ -18,7 +18,7 @@ body, html {
 /* Sidebar */
 .sidebar {
   background: #0f4c75;
-  width: 80px;
+  width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
