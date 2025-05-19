@@ -85,18 +85,6 @@ body, html {
   overflow: hidden;
 }
 
-/* Fence */
-.fence {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  background: url('https://i.imgur.com/x9G5OUJ.png') repeat;
-  background-size: 48px 48px;
-  z-index: 50;
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-}
-
 /* Planting area */
 #planting-area {
   position: absolute;
