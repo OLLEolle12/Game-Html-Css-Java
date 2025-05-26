@@ -4,85 +4,74 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Casino Slot Machine</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <div class="game-wrapper">
     <header class="game-header">
-      <h1 class="title">🎰 Vegas Slots 🎰</h1>
-      <p class="subtitle">Feel the thrill. Win the jackpot!</p>
+      <h1 class="title">Casino Slots</h1>
+      <p class="subtitle">Spin the reels and test your luck!</p>
     </header>
 
-    <main class="game-container">
-      <!-- Balance and Betting -->
-      <section class="balance-section">
-        <div class="balance">Balance: $<span id="balance">100</span></div>
-        <div class="bet-selector">
-          Bet: $
-          <select id="bet-amount">
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-          </select>
-        </div>
-      </section>
+    <section class="balance-section">
+      <!-- JS will inject balance & bet selector -->
+    </section>
 
-      <!-- Slot Machine Display -->
-      <section class="slot-machine">
-        <div class="reel-column">
-          <div class="reel"><img src="https://i.imgur.com/WLHb6TA.png" alt="Cherry" /></div>
-          <div class="reel"><img src="https://i.imgur.com/lovSpjQ.png" alt="Lemon" /></div>
-          <div class="reel"><img src="https://i.imgur.com/IPVhR6k.png" alt="Strawberry" /></div>
-        </div>
-        <div class="reel-column">
-          <div class="reel"><img src="https://i.imgur.com/BnEjjIk.png" alt="Grape" /></div>
-          <div class="reel"><img src="https://i.imgur.com/HaxcHAt.png" alt="Apple" /></div>
-          <div class="reel"><img src="https://i.imgur.com/i4IqK9n.png" alt="Banana" /></div>
-        </div>
-        <div class="reel-column">
-          <div class="reel"><img src="https://i.imgur.com/jKJ260m.png" alt="Watermelon" /></div>
-          <div class="reel"><img src="https://i.imgur.com/Xfqal0K.png" alt="Bell" /></div>
-          <div class="reel"><img src="https://i.imgur.com/PwFcwj1.png" alt="Horse Shoe" /></div>
-        </div>
-        <div class="reel-column">
-          <div class="reel"><img src="https://i.imgur.com/QHtBDPf.png" alt="Clover" /></div>
-          <div class="reel"><img src="https://i.imgur.com/NyYN8XU.png" alt="Big Win" /></div>
-          <div class="reel"><img src="https://i.imgur.com/SGg68qy.png" alt="Diamond" /></div>
-        </div>
-        <div class="reel-column">
-          <div class="reel"><img src="https://i.imgur.com/1uRKpwU.png" alt="7" /></div>
-          <div class="reel"><img src="https://i.imgur.com/Xc5qcpV.png" alt="777" /></div>
-          <div class="reel"><img src="https://i.imgur.com/YrPdQ4k.png" alt="Bar" /></div>
-        </div>
-      </section>
-
-      <!-- Controls -->
-      <section class="controls">
-        <button id="spin-button">🎲 Spin</button>
-        <div class="result" id="result"></div>
-      </section>
-
-      <!-- Big Win Overlay -->
-      <div class="big-win-overlay" id="big-win">
-        <img src="https://i.imgur.com/NyYN8XU.png" alt="Big Win" class="big-win-image" />
-        <h2 class="big-win-text">BIG WIN!</h2>
+    <section class="slot-machine">
+      <!-- 5 Columns x 3 Rows -->
+      <div class="reel-column">
+        <div class="reel"><img src="https://i.imgur.com/WLHb6TA.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/lovSpjQ.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/IPVhR6k.png" /></div>
       </div>
+      <div class="reel-column">
+        <div class="reel"><img src="https://i.imgur.com/BnEjjIk.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/HaxcHAt.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/i4IqK9n.png" /></div>
+      </div>
+      <div class="reel-column">
+        <div class="reel"><img src="https://i.imgur.com/jKJ260m.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/Xfqal0K.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/PwFcwj1.png" /></div>
+      </div>
+      <div class="reel-column">
+        <div class="reel"><img src="https://i.imgur.com/QHtBDPf.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/SGg68qy.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/1uRKpwU.png" /></div>
+      </div>
+      <div class="reel-column">
+        <div class="reel"><img src="https://i.imgur.com/Xc5qcpV.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/YrPdQ4k.png" /></div>
+        <div class="reel"><img src="https://i.imgur.com/lovSpjQ.png" /></div>
+      </div>
+    </section>
 
-      <!-- Info Panel -->
-      <section class="info-panel">
-        <p>🎯 Match 3 of the same symbol across the middle row to win.</p>
-        <ul>
-          <li><img src="https://i.imgur.com/WLHb6TA.png" alt="Cherry" /> = 10 pts</li>
-          <li><img src="https://i.imgur.com/SGg68qy.png" alt="Diamond" /> = 50 pts</li>
-          <li><img src="https://i.imgur.com/Xc5qcpV.png" alt="777" /> = JACKPOT + BIG WIN</li>
-        </ul>
-      </section>
-    </main>
+    <section class="controls">
+      <div id="result" class="result"></div>
+      <button id="spin-button">Spin</button>
+    </section>
 
-    <footer class="footer">
-      <p>&copy; 2025 Casino Royale Studios. All rights reserved.</p>
-    </footer>
+    <section class="info-panel">
+      <p>Symbols:</p>
+      <ul>
+        <li><img src="https://i.imgur.com/WLHb6TA.png" /> Cherry</li>
+        <li><img src="https://i.imgur.com/lovSpjQ.png" /> Lemon</li>
+        <li><img src="https://i.imgur.com/IPVhR6k.png" /> Strawberry</li>
+        <li><img src="https://i.imgur.com/BnEjjIk.png" /> Grape</li>
+        <li><img src="https://i.imgur.com/HaxcHAt.png" /> Apple</li>
+        <li><img src="https://i.imgur.com/i4IqK9n.png" /> Banana</li>
+        <li><img src="https://i.imgur.com/jKJ260m.png" /> Watermelon</li>
+        <li><img src="https://i.imgur.com/Xfqal0K.png" /> Bell</li>
+        <li><img src="https://i.imgur.com/PwFcwj1.png" /> Horseshoe</li>
+        <li><img src="https://i.imgur.com/QHtBDPf.png" /> Clover</li>
+        <li><img src="https://i.imgur.com/SGg68qy.png" /> Diamond</li>
+        <li><img src="https://i.imgur.com/1uRKpwU.png" /> 7</li>
+        <li><img src="https://i.imgur.com/Xc5qcpV.png" /> 777 (JACKPOT)</li>
+        <li><img src="https://i.imgur.com/YrPdQ4k.png" /> BAR (Bonus)</li>
+      </ul>
+    </section>
+
+    <footer class="footer">🎰 Good Luck and Gamble Responsibly 🎰</footer>
   </div>
 
   <script src="script.js"></script>
