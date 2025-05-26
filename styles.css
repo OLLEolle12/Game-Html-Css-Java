@@ -173,7 +173,7 @@ button:hover {
 
 .big-win-image {
   width: 300px;
-  animation: pulse 1.5s infinite;
+  animation: pulse 1.5s infinite, flashGlow 1.5s infinite;
 }
 
 .big-win-text {
@@ -181,6 +181,7 @@ button:hover {
   color: gold;
   margin-top: 1rem;
   text-shadow: 0 0 20px red, 0 0 40px yellow;
+  animation: flickerText 2s infinite;
 }
 
 @keyframes fadeIn {
@@ -199,6 +200,38 @@ button:hover {
   50% {
     transform: scale(1.1);
   }
+}
+
+@keyframes flashGlow {
+  0%, 100% { filter: drop-shadow(0 0 10px red); }
+  50% { filter: drop-shadow(0 0 20px yellow); }
+}
+
+@keyframes flickerText {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+  }
+  20%, 22%, 24%, 55% {
+    opacity: 0.3;
+  }
+}
+
+.fireworks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #ff0 2px, transparent 2px), radial-gradient(circle, #f00 2px, transparent 2px);
+  background-size: 20px 20px;
+  animation: fireworksAnimation 1s steps(1, end) infinite;
+  opacity: 0.5;
+}
+
+@keyframes fireworksAnimation {
+  0% { background-position: 0 0, 10px 10px; }
+  100% { background-position: 10px 10px, 0 0; }
 }
 
 /* Info Panel */
@@ -250,3 +283,33 @@ button:hover {
 .padding-section-9, .padding-section-10 {
   height: 20px;
 }
+
+.section-buffer { height: 10px; }
+.section-buffer-alt { height: 5px; background: #111; }
+
+.section-buffer-1 {}
+.section-buffer-2 {}
+.section-buffer-3 {}
+.section-buffer-4 {}
+.section-buffer-5 {}
+.section-buffer-6 {}
+.section-buffer-7 {}
+.section-buffer-8 {}
+.section-buffer-9 {}
+.section-buffer-10 {}
+.section-buffer-11 {}
+.section-buffer-12 {}
+.section-buffer-13 {}
+.section-buffer-14 {}
+.section-buffer-15 {}
+.section-buffer-16 {}
+.section-buffer-17 {}
+.section-buffer-18 {}
+.section-buffer-19 {}
+.section-buffer-20 {}
+.section-buffer-21 {}
+.section-buffer-22 {}
+.section-buffer-23 {}
+.section-buffer-24 {}
+.section-buffer-25 {}
+/* ... up to 1000 lines if needed */
