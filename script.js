@@ -1,279 +1,105 @@
-/* Reset & Base */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+// script.js - Casino Slot Logic
+
+const symbols = [
+  'Cherry', 'Lemon', 'StrawBerry', 'Grape', 'Apple',
+  'Banana', 'Watermelon', 'Bell', 'HorseShoe', 'Clover',
+  'Diamond', '7', 'Bar'
+];
+
+const symbolImages = {
+  Cherry: 'https://i.imgur.com/WLHb6TA.png',
+  Lemon: 'https://i.imgur.com/lovSpjQ.png',
+  StrawBerry: 'https://i.imgur.com/IPVhR6k.png',
+  Grape: 'https://i.imgur.com/BnEjjIk.png',
+  Apple: 'https://i.imgur.com/HaxcHAt.png',
+  Banana: 'https://i.imgur.com/i4IqK9n.png',
+  Watermelon: 'https://i.imgur.com/jKJ260m.png',
+  Bell: 'https://i.imgur.com/Xfqal0K.png',
+  HorseShoe: 'https://i.imgur.com/PwFcwj1.png',
+  Clover: 'https://i.imgur.com/QHtBDPf.png',
+  Diamond: 'https://i.imgur.com/SGg68qy.png',
+  '7': 'https://i.imgur.com/1uRKpwU.png',
+  Bar: 'https://i.imgur.com/YrPdQ4k.png'
+};
+
+let balance = 100;
+
+const balanceDisplay = document.getElementById('balance');
+const spinButton = document.getElementById('spinButton');
+const resultDisplay = document.getElementById('result');
+const betInput = document.getElementById('betInput');
+const bigWinOverlay = document.querySelector('.big-win-overlay');
+const reels = document.querySelectorAll('.reel');
+
+function updateBalanceDisplay() {
+  balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #111, #222);
-  color: #fff;
-  overflow-x: hidden;
-  min-height: 100vh;
+function getRandomSymbol() {
+  return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+function createSymbolImage(symbol) {
+  const img = document.createElement('img');
+  img.src = symbolImages[symbol];
+  img.alt = symbol;
+  img.classList.add('spin');
+  return img;
 }
 
-img {
-  width: 100%;
-  height: auto;
+function spinReel(reel, delay = 0) {
+  return new Promise((resolve) => {
+    let spinCount = 15 + Math.floor(Math.random() * 10);
+    let i = 0;
+    const interval = setInterval(() => {
+      const symbol = getRandomSymbol();
+      reel.innerHTML = '';
+      reel.appendChild(createSymbolImage(symbol));
+      i++;
+      if (i >= spinCount) {
+        clearInterval(interval);
+        resolve(symbol);
+      }
+    }, 100 + delay);
+  });
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  font-size: 1.2rem;
-  padding: 0.75rem 2rem;
-  background: gold;
-  color: #000;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+function showBigWin() {
+  bigWinOverlay.style.display = 'flex';
+  setTimeout(() => {
+    bigWinOverlay.style.display = 'none';
+  }, 5000);
 }
 
-button:hover {
-  background: #ffc107;
-  transform: scale(1.05);
-}
-
-/* Layout */
-.game-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 12px;
-  box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
-}
-
-.game-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.title {
-  font-size: 3rem;
-  color: gold;
-  text-shadow: 0 0 20px red;
-}
-
-.subtitle {
-  font-size: 1.2rem;
-  color: #ccc;
-}
-
-.balance-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding: 0 1rem;
-}
-
-.balance,
-.bet-selector {
-  font-size: 1.4rem;
-  background: #222;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  box-shadow: inset 0 0 10px #000;
-}
-
-/* Slot Machine */
-.slot-machine {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-.reel-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background: #111;
-  border: 2px solid gold;
-  border-radius: 10px;
-  padding: 0.5rem;
-  box-shadow: 0 0 10px #ffd700;
-}
-
-.reel {
-  height: 100px;
-  background: #000;
-  border: 1px solid #444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.reel img {
-  max-height: 80px;
-  transition: transform 0.8s ease;
-}
-
-.reel img.spin {
-  animation: spinEffect 0.8s ease-in-out;
-}
-
-@keyframes spinEffect {
-  0% {
-    transform: translateY(-100%) rotateX(360deg);
-    opacity: 0.2;
+spinButton.addEventListener('click', async () => {
+  const bet = parseFloat(betInput.value);
+  if (isNaN(bet) || bet <= 0 || bet > balance) {
+    resultDisplay.textContent = 'Invalid Bet!';
+    return;
   }
-  50% {
-    transform: translateY(50%) scale(1.2);
-    opacity: 1;
+
+  resultDisplay.textContent = '';
+  balance -= bet;
+  updateBalanceDisplay();
+
+  const results = await Promise.all(
+    Array.from(reels).map((reel, index) => spinReel(reel, index * 100))
+  );
+
+  const counts = {};
+  results.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
+
+  let win = 0;
+  if (results.every((sym) => sym === '7')) {
+    win = bet * 50;
+    showBigWin();
+  } else if (Object.values(counts).some(count => count >= 3)) {
+    win = bet * 3;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-/* Controls */
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
+  balance += win;
+  updateBalanceDisplay();
+  resultDisplay.textContent = win > 0 ? `You won $${win.toFixed(2)}!` : 'No win. Try again!';
+});
 
-.result {
-  font-size: 1.6rem;
-  color: gold;
-  text-shadow: 0 0 5px #fff;
-  height: 2rem;
-}
-
-/* Big Win Overlay */
-.big-win-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 1000;
-  animation: fadeIn 1s ease forwards;
-}
-
-.big-win-image {
-  width: 300px;
-  animation: pulse 1.5s infinite;
-}
-
-.big-win-text {
-  font-size: 3rem;
-  color: gold;
-  margin-top: 1rem;
-  text-shadow: 0 0 20px red, 0 0 40px yellow;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-/* Info Panel */
-.info-panel {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: #1a1a1a;
-  border-radius: 10px;
-  border: 1px solid #555;
-}
-
-.info-panel p {
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.info-panel ul {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.5rem;
-}
-
-.info-panel li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-}
-
-.info-panel img {
-  width: 30px;
-  height: 30px;
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.9rem;
-  color: #aaa;
-  border-top: 1px solid #333;
-  padding-top: 1rem;
-}
-
-/* Decorative/Fillers for line count and layout */
-.section-buffer,
-.padding-section-1,
-.padding-section-2,
-.padding-section-3,
-.padding-section-4,
-.padding-section-5,
-.padding-section-6,
-.padding-section-7,
-.padding-section-8,
-.padding-section-9,
-.padding-section-10 {
-  height: 10px;
-}
-
-.section-buffer-alt {
-  height: 5px;
-  background: #111;
-}
-
-.section-buffer-1 {}
-.section-buffer-2 {}
-.section-buffer-3 {}
-.section-buffer-4 {}
-.section-buffer-5 {}
-.section-buffer-6 {}
-.section-buffer-7 {}
-.section-buffer-8 {}
-.section-buffer-9 {}
-.section-buffer-10 {}
-/* Add as many as needed to go beyond 1000 lines for customization room */
-.section-buffer-11 {}
-.section-buffer-12 {}
-/* ... */
-.section-buffer-100 {}
+updateBalanceDisplay();
