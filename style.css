@@ -1,50 +1,55 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #fef8e7;
-  text-align: center;
-  padding: 2rem;
+.game-area {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  border: 2px dashed #ccc;
+  margin: 1rem 0;
+  background-color: #fffbe6;
+  overflow: hidden;
 }
 
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+.pet {
+  position: absolute;
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.4s ease;
 }
 
-.pet-area {
-  margin: 20px 0;
-}
-
-.pet-area img {
-  width: 200px;
-  height: auto;
-  transition: transform 0.3s ease;
-}
-
-.pet-area img.animate {
+.pet.animate {
   transform: scale(1.1);
 }
 
-.stats {
-  margin: 20px 0;
-  font-size: 1.1rem;
+.pet-menu {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background-color: #fff3cd;
+  padding: 1rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-progress {
-  width: 200px;
-  height: 20px;
+.pet-menu.hidden {
+  display: none;
 }
 
-.controls button {
-  margin: 10px;
-  font-size: 1.2rem;
-  padding: 10px 20px;
-  cursor: pointer;
+.shop {
+  margin-top: 2rem;
+}
+
+.shop button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #c8e6c9;
   border: none;
-  background-color: #ffd966;
   border-radius: 10px;
-  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
-.controls button:hover {
-  background-color: #ffc107;
+.shop button:hover {
+  background-color: #a5d6a7;
 }
