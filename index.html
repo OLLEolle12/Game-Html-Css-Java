@@ -1,68 +1,116 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Virtual Pet Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Enkelt 3D Skjutspel</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
 </head>
 <body>
-  <div id="game-container">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script>
+    // Setup scen, kamera och renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    <h1>Virtual Pet Game</h1>
+    // Ljuskälla
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(0, 10, 10);
+    scene.add(light);
 
-    <div id="coins-display">Coins: <span id="coins-count">0</span></div>
+    // Golv
+    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x228822 });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
 
-    <button id="shop-toggle" title="Open Pet Shop">🐾</button>
+    // Spelarens "kropp" (en enkel kub)
+    const playerGeometry = new THREE.BoxGeometry(1, 2, 1);
+    const playerMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+    const player = new THREE.Mesh(playerGeometry, playerMaterial);
+    player.position.y = 1;
+    scene.add(player);
 
-    <div id="shop-panel" class="hidden">
-      <button id="shop-exit">X</button>
-      <h2>Pet Shop</h2>
-      <div id="shop-items">
-        <!-- Pets and decorations will be inserted here -->
-      </div>
-    </div>
+    // Kameran följer spelaren
+    camera.position.set(0, 3, 5);
+    camera.lookAt(player.position);
 
-    <div id="tutorial-modal" class="hidden">
-      <div class="tutorial-content">
-        <h2>Welcome to Virtual Pet Game!</h2>
-        <p>Click pets to interact with them.<br />
-          Use the pet shop 🐾 button to buy new pets.<br />
-          Drag pets or decorations to move them.<br />
-          Complete quests for coins!</p>
-        <button id="tutorial-close">Start Playing</button>
-      </div>
-    </div>
+    // Rörelse
+    const move = {
+      forward: false,
+      backward: false
+    };
 
-    <div id="quest-panel">
-      <h3>Current Quest</h3>
-      <p id="quest-text">Loading quests...</p>
-      <button id="quest-claim" disabled>Claim Reward</button>
-    </div>
+    // Kulor som skjuts
+    const bullets = [];
+    const bulletSpeed = 0.5;
 
-    <div class="pet-area" id="pet-area">
-      <!-- Background textures -->
-      <img src="https://i.imgur.com/SJasdBl.png" alt="Wood floor" class="background-floor" />
-      <img src="https://i.imgur.com/LSIc3qz.png" alt="Stone walls" class="background-wall" />
-    </div>
+    // Skjut-funktion
+    function shoot() {
+      const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+      bullet.position.set(player.position.x, player.position.y + 1, player.position.z);
+      bullet.direction = new THREE.Vector3(0, 0, -1);
+      bullet.direction.applyQuaternion(player.quaternion);
+      bullets.push(bullet);
+      scene.add(bullet);
+    }
 
-    <div class="pet-menu hidden" id="pet-menu">
-      <button id="feed-btn">Feed</button>
-      <button id="play-btn">Play</button>
-      <button id="sleep-btn">Sleep</button>
-      <input type="text" id="petName" placeholder="Rename pet..." />
-      <button id="rename-btn">Rename</button>
-    </div>
+    // Tangentbordshantering
+    window.addEventListener('keydown', (e) => {
+      if(e.code === 'KeyW') move.forward = true;
+      if(e.code === 'KeyS') move.backward = true;
+      if(e.code === 'Space') shoot();
+    });
+    window.addEventListener('keyup', (e) => {
+      if(e.code === 'KeyW') move.forward = false;
+      if(e.code === 'KeyS') move.backward = false;
+    });
 
-    <audio id="background-music" loop>
-      <source src="https://cdn.pixabay.com/download/audio/2022/03/21/audio_603dbb8ac7.mp3?filename=relaxing-ambient-8701.mp3" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
 
-    <button id="music-toggle" title="Toggle Music">🎵</button>
+      // Flytta spelaren framåt/bakåt
+      if(move.forward) {
+        player.position.add(new THREE.Vector3(0, 0, -0.1).applyQuaternion(player.quaternion));
+      }
+      if(move.backward) {
+        player.position.add(new THREE.Vector3(0, 0, 0.1).applyQuaternion(player.quaternion));
+      }
 
-  </div>
+      // Kameran följer spelaren
+      camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y + 3, player.position.z + 5), 0.1);
+      camera.lookAt(player.position);
 
-  <script src="script.js"></script>
+      // Flytta kulor framåt
+      for(let i = bullets.length - 1; i >= 0; i--) {
+        bullets[i].position.add(bullets[i].direction.clone().multiplyScalar(bulletSpeed));
+        // Ta bort kulan om den kommer för långt
+        if(bullets[i].position.distanceTo(player.position) > 50) {
+          scene.remove(bullets[i]);
+          bullets.splice(i, 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Hantera fönsterstorlek
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
