@@ -3,75 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Casino Slot Machine</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <title>Virtual Pet Game</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-wrapper">
-    <header class="game-header">
-      <h1 class="title">Casino Slots</h1>
-      <p class="subtitle">Spin the reels and test your luck!</p>
-    </header>
+  <h1>🐾 Virtual Pet Game</h1>
 
-    <section class="balance-section">
-      <!-- JS will inject balance & bet selector -->
-    </section>
+  <div class="pet-area">
+    <img id="pet-img" src="https://i.imgur.com/eJwANIJ.png" alt="Your Pet" />
+    <h2 id="pet-name">Whiskers</h2>
+  </div>
 
-    <section class="slot-machine">
-      <!-- 5 Columns x 3 Rows -->
-      <div class="reel-column">
-        <div class="reel"><img src="https://i.imgur.com/WLHb6TA.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/lovSpjQ.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/IPVhR6k.png" /></div>
-      </div>
-      <div class="reel-column">
-        <div class="reel"><img src="https://i.imgur.com/BnEjjIk.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/HaxcHAt.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/i4IqK9n.png" /></div>
-      </div>
-      <div class="reel-column">
-        <div class="reel"><img src="https://i.imgur.com/jKJ260m.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/Xfqal0K.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/PwFcwj1.png" /></div>
-      </div>
-      <div class="reel-column">
-        <div class="reel"><img src="https://i.imgur.com/QHtBDPf.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/SGg68qy.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/1uRKpwU.png" /></div>
-      </div>
-      <div class="reel-column">
-        <div class="reel"><img src="https://i.imgur.com/Xc5qcpV.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/YrPdQ4k.png" /></div>
-        <div class="reel"><img src="https://i.imgur.com/lovSpjQ.png" /></div>
-      </div>
-    </section>
+  <div class="stats">
+    <div>Hunger: <progress id="hunger" value="50" max="100"></progress></div>
+    <div>Happiness: <progress id="happiness" value="50" max="100"></progress></div>
+    <div>Energy: <progress id="energy" value="50" max="100"></progress></div>
+  </div>
 
-    <section class="controls">
-      <div id="result" class="result"></div>
-      <button id="spin-button">Spin</button>
-    </section>
-
-    <section class="info-panel">
-      <p>Symbols:</p>
-      <ul>
-        <li><img src="https://i.imgur.com/WLHb6TA.png" /> Cherry</li>
-        <li><img src="https://i.imgur.com/lovSpjQ.png" /> Lemon</li>
-        <li><img src="https://i.imgur.com/IPVhR6k.png" /> Strawberry</li>
-        <li><img src="https://i.imgur.com/BnEjjIk.png" /> Grape</li>
-        <li><img src="https://i.imgur.com/HaxcHAt.png" /> Apple</li>
-        <li><img src="https://i.imgur.com/i4IqK9n.png" /> Banana</li>
-        <li><img src="https://i.imgur.com/jKJ260m.png" /> Watermelon</li>
-        <li><img src="https://i.imgur.com/Xfqal0K.png" /> Bell</li>
-        <li><img src="https://i.imgur.com/PwFcwj1.png" /> Horseshoe</li>
-        <li><img src="https://i.imgur.com/QHtBDPf.png" /> Clover</li>
-        <li><img src="https://i.imgur.com/SGg68qy.png" /> Diamond</li>
-        <li><img src="https://i.imgur.com/1uRKpwU.png" /> 7</li>
-        <li><img src="https://i.imgur.com/Xc5qcpV.png" /> 777 (JACKPOT)</li>
-        <li><img src="https://i.imgur.com/YrPdQ4k.png" /> BAR (Bonus)</li>
-      </ul>
-    </section>
-
-    <footer class="footer">🎰 Good Luck and Gamble Responsibly 🎰</footer>
+  <div class="controls">
+    <button onclick="feedPet()">🍔 Feed</button>
+    <button onclick="playWithPet()">🎾 Play</button>
+    <button onclick="putToSleep()">💤 Sleep</button>
   </div>
 
   <script src="script.js"></script>
