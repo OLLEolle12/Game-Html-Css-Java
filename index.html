@@ -2,16 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Virtual Pet Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>🐾 Virtual Pet Game</h1>
 
-  <div class="pet-area">
-    <img id="pet-img" src="https://i.imgur.com/eJwANIJ.png" alt="Your Pet" />
-    <h2 id="pet-name">Whiskers</h2>
+  <div class="name-input">
+    <label for="petName">Pet Name:</label>
+    <input type="text" id="petName" placeholder="Enter a name..." />
+    <button onclick="setPetName()">Save Name</button>
+  </div>
+
+  <div class="pet-selector">
+    <p>Choose Your Pet:</p>
+    <button onclick="changePet('cat')">🐱 Cat</button>
+    <button onclick="changePet('dog')">🐶 Dog</button>
+    <button onclick="changePet('alien')">👽 Alien</button>
+    <button onclick="changePet('bunny')">🐰 Bunny</button>
+  </div>
+
+  <div class="game-area" onclick="hidePetMenu()">
+    <div id="pet-area" class="pet-area">
+      <!-- Pets will appear here -->
+    </div>
+  </div>
+
+  <div id="pet-menu" class="pet-menu hidden">
+    <button onclick="feedPet()">🍔 Feed</button>
+    <button onclick="playWithPet()">🎾 Play</button>
+    <button onclick="putToSleep()">💤 Sleep</button>
   </div>
 
   <div class="stats">
@@ -20,10 +41,10 @@
     <div>Energy: <progress id="energy" value="50" max="100"></progress></div>
   </div>
 
-  <div class="controls">
-    <button onclick="feedPet()">🍔 Feed</button>
-    <button onclick="playWithPet()">🎾 Play</button>
-    <button onclick="putToSleep()">💤 Sleep</button>
+  <div class="shop">
+    <h2>🛒 Pet Shop</h2>
+    <button onclick="buyPet('dragon')">Buy Dragon 🐉 - 100 coins</button>
+    <button onclick="buyDecoration('plant')">Buy Plant 🪴 - 50 coins</button>
   </div>
 
   <script src="script.js"></script>
