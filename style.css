@@ -14,6 +14,13 @@ h1 {
   animation: slideIn 0.6s ease;
 }
 
+.coins-display {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #6a4f00;
+  font-weight: bold;
+}
+
 .name-input {
   margin-bottom: 1rem;
 }
@@ -70,12 +77,13 @@ h1 {
   border: 2px dashed #ccc;
   background-color: #fffbe6;
   overflow: hidden;
+  user-select: none;
 }
 
-.pet {
+.pet, .decoration {
   position: absolute;
   width: 100px;
-  cursor: pointer;
+  cursor: grab;
   transition: transform 0.4s ease;
 }
 
@@ -94,6 +102,7 @@ h1 {
   padding: 1rem;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 
 .pet-menu.hidden {
