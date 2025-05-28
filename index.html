@@ -7,47 +7,52 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🐾 Virtual Pet Game</h1>
-
-  <div class="coins-display">
-    Coins: <span id="coins-count">150</span> 💰
+  <div id="background-container">
+    <div id="stone-walls"></div>
+    <div id="floor"></div>
   </div>
 
-  <div class="name-input">
-    <label for="petName">Pet Name:</label>
-    <input type="text" id="petName" placeholder="Enter a name..." />
-    <button onclick="setPetName()">Save Name</button>
-  </div>
-
-  <div class="pet-selector">
-    <p>Choose Your Pet:</p>
-    <button onclick="changePet('cat')">🐱 Cat</button>
-    <button onclick="changePet('dog')">🐶 Dog</button>
-    <button onclick="changePet('alien')">👽 Alien</button>
-    <button onclick="changePet('bunny')">🐰 Bunny</button>
-  </div>
-
-  <div class="game-area" onclick="hidePetMenu()">
-    <div id="pet-area" class="pet-area" >
-      <!-- Pets and decorations appear here -->
+  <div id="left-sidebar">
+    <button id="shop-toggle" title="Toggle Pet Shop">🛒</button>
+    <div id="coins-display">
+      💰 Coins: <span id="coins-count">150</span>
     </div>
   </div>
 
-  <div id="pet-menu" class="pet-menu hidden">
-    <button onclick="feedPet()">🍔 Feed</button>
-    <button onclick="playWithPet()">🎾 Play</button>
-    <button onclick="putToSleep()">💤 Sleep</button>
-  </div>
-
-  <div class="shop">
-    <h2>🛒 Pet Shop</h2>
+  <div id="shop-panel" class="hidden">
+    <h2>Pet Shop</h2>
     <button onclick="buyPet('dragon')">Buy Dragon 🐉 - 100 coins</button>
     <button onclick="buyDecoration('plant')">Buy Plant 🪴 - 50 coins</button>
+    <button onclick="buyDecoration('bowl')">Buy Bowl 🥣 - 30 coins</button>
   </div>
 
-  <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
-    * Drag pets and decorations to move them around!
-  </p>
+  <div id="game-container">
+    <h1>🐾 Virtual Pet Game</h1>
+
+    <div class="name-input">
+      <label for="petName">Pet Name:</label>
+      <input type="text" id="petName" placeholder="Enter a name..." />
+      <button onclick="setPetName()">Save Name</button>
+    </div>
+
+    <div class="pet-selector">
+      <p>Choose Your Pet:</p>
+      <button onclick="changePet('cat')">🐱 Cat</button>
+      <button onclick="changePet('dog')">🐶 Dog</button>
+      <button onclick="changePet('alien')">👽 Alien</button>
+      <button onclick="changePet('bunny')">🐰 Bunny</button>
+    </div>
+
+    <div id="pet-area" class="pet-area" onclick="hidePetMenu()">
+      <!-- Pets and decorations appear here -->
+    </div>
+
+    <div id="pet-menu" class="pet-menu hidden">
+      <button onclick="feedPet()">🍔 Feed</button>
+      <button onclick="playWithPet()">🎾 Play</button>
+      <button onclick="putToSleep()">💤 Sleep</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
