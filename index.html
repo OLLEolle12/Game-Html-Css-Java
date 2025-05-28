@@ -2,100 +2,241 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Enkelt 3D Skjutspel</title>
+  <title>Simple FPS Demo med Three.js</title>
   <style>
-    body { margin: 0; overflow: hidden; }
+    body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: Arial, sans-serif; }
+    #instructions {
+      position: absolute;
+      top: 40%;
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      z-index: 10;
+    }
     canvas { display: block; }
   </style>
 </head>
 <body>
+  <div id="instructions">
+    Klicka här och använd musen för att starta och titta runt<br>
+    WASD för att röra dig, vänsterklick för att skjuta
+  </div>
+  <div id="info"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
   <script>
-    // Setup scen, kamera och renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
 
-    // Ljuskälla
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 10, 10);
-    scene.add(light);
+    let camera, scene, renderer;
+    let controlsEnabled = false;
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    let velocity = new THREE.Vector3();
+    let direction = new THREE.Vector3();
+    let prevTime = performance.now();
 
-    // Golv
-    const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x228822 });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    scene.add(floor);
+    // För musrotation (pitch och yaw)
+    let pitchObject, yawObject;
 
-    // Spelarens "kropp" (en enkel kub)
-    const playerGeometry = new THREE.BoxGeometry(1, 2, 1);
-    const playerMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff });
-    const player = new THREE.Mesh(playerGeometry, playerMaterial);
-    player.position.y = 1;
-    scene.add(player);
+    // Vapen och armar (enkel låda som vapen)
+    let weapon;
 
-    // Kameran följer spelaren
-    camera.position.set(0, 3, 5);
-    camera.lookAt(player.position);
-
-    // Rörelse
-    const move = {
-      forward: false,
-      backward: false
-    };
-
-    // Kulor som skjuts
+    // Bullets
     const bullets = [];
-    const bulletSpeed = 0.5;
+    const bulletSpeed = 1;
 
-    // Skjut-funktion
-    function shoot() {
-      const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-      const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-      const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
-      bullet.position.set(player.position.x, player.position.y + 1, player.position.z);
-      bullet.direction = new THREE.Vector3(0, 0, -1);
-      bullet.direction.applyQuaternion(player.quaternion);
-      bullets.push(bullet);
-      scene.add(bullet);
+    // Setup ljud
+    let shootSound = new Audio('https://actions.google.com/sounds/v1/impacts/wood_plank_flicks.ogg');
+
+    // UI
+    const instructions = document.getElementById('instructions');
+    const info = document.getElementById('info');
+    let score = 0;
+
+    // --- Initiera scenen ---
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x87ceeb); // ljusblå himmel
+
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+      // Skapa pitch och yaw objekt för kamerans rotation (pitch = upp/ner, yaw = vänster/höger)
+      pitchObject = new THREE.Object3D();
+      pitchObject.add(camera);
+
+      yawObject = new THREE.Object3D();
+      yawObject.position.y = 2; // Höjd från marken (spelarens ögon)
+      yawObject.add(pitchObject);
+
+      scene.add(yawObject);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Golv - stor karta
+      const floorGeometry = new THREE.PlaneGeometry(200, 200);
+      const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x228822 });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // Ljus
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(10, 20, 10);
+      scene.add(light);
+
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+
+      // Vapen & armar - enkel kub framför kameran
+      const weaponGeometry = new THREE.BoxGeometry(0.3, 0.3, 1);
+      const weaponMaterial = new THREE.MeshPhongMaterial({ color: 0x555555 });
+      weapon = new THREE.Mesh(weaponGeometry, weaponMaterial);
+      weapon.position.set(0.4, -0.5, -1);
+      camera.add(weapon);
+
+      // Händelsehanterare för tangentbord
+      document.addEventListener('keydown', onKeyDown);
+      document.addEventListener('keyup', onKeyUp);
+
+      // Pointer lock API
+      instructions.addEventListener('click', function () {
+        instructions.style.display = 'none';
+        document.body.requestPointerLock();
+      });
+
+      document.addEventListener('pointerlockchange', onPointerLockChange);
+      document.addEventListener('mousemove', onMouseMove);
+
+      // Skjutfunktion (vänster klick)
+      document.addEventListener('mousedown', (e) => {
+        if (!controlsEnabled) return;
+        if (e.button === 0) shoot();
+      });
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function onPointerLockChange() {
+      if (document.pointerLockElement === document.body) {
+        controlsEnabled = true;
+      } else {
+        controlsEnabled = false;
+        instructions.style.display = '';
+      }
+    }
+
+    // Musrörelse för att rotera kamera
+    function onMouseMove(event) {
+      if (!controlsEnabled) return;
+
+      const movementX = event.movementX || 0;
+      const movementY = event.movementY || 0;
+
+      const sensitivity = 0.002;
+
+      yawObject.rotation.y -= movementX * sensitivity;
+      pitchObject.rotation.x -= movementY * sensitivity;
+
+      // Begränsa upp/ner rotation mellan -90 och +90 grader
+      pitchObject.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitchObject.rotation.x));
     }
 
     // Tangentbordshantering
-    window.addEventListener('keydown', (e) => {
-      if(e.code === 'KeyW') move.forward = true;
-      if(e.code === 'KeyS') move.backward = true;
-      if(e.code === 'Space') shoot();
-    });
-    window.addEventListener('keyup', (e) => {
-      if(e.code === 'KeyW') move.forward = false;
-      if(e.code === 'KeyS') move.backward = false;
-    });
+    function onKeyDown(event) {
+      switch (event.code) {
+        case 'KeyW': moveForward = true; break;
+        case 'KeyS': moveBackward = true; break;
+        case 'KeyA': moveLeft = true; break;
+        case 'KeyD': moveRight = true; break;
+      }
+    }
+    function onKeyUp(event) {
+      switch (event.code) {
+        case 'KeyW': moveForward = false; break;
+        case 'KeyS': moveBackward = false; break;
+        case 'KeyA': moveLeft = false; break;
+        case 'KeyD': moveRight = false; break;
+      }
+    }
+
+    // Skjutfunktion
+    function shoot() {
+      shootSound.currentTime = 0;
+      shootSound.play();
+
+      const bulletGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+      const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+
+      // Starta från vapenets position i världens koordinater
+      const matrixWorld = weapon.matrixWorld;
+      const position = new THREE.Vector3();
+      matrixWorld.decompose(position, new THREE.Quaternion(), new THREE.Vector3());
+      bullet.position.copy(position);
+
+      // Riktning baserat på kamerans riktning
+      const direction = new THREE.Vector3(0, 0, -1);
+      direction.applyQuaternion(camera.quaternion);
+      bullet.userData = { velocity: direction.multiplyScalar(bulletSpeed) };
+
+      scene.add(bullet);
+      bullets.push(bullet);
+    }
+
+    // Fönsterstorleksändring
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
     // Animation
     function animate() {
       requestAnimationFrame(animate);
 
-      // Flytta spelaren framåt/bakåt
-      if(move.forward) {
-        player.position.add(new THREE.Vector3(0, 0, -0.1).applyQuaternion(player.quaternion));
-      }
-      if(move.backward) {
-        player.position.add(new THREE.Vector3(0, 0, 0.1).applyQuaternion(player.quaternion));
+      if (controlsEnabled) {
+        const time = performance.now();
+        const delta = (time - prevTime) / 1000;
+
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+
+        direction.z = Number(moveForward) - Number(moveBackward);
+        direction.x = Number(moveRight) - Number(moveLeft);
+        direction.normalize(); // gör att vi inte går snabbare diagonalt
+
+        const speed = 5;
+
+        if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+        if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+        // Flytta yawObject (spelaren)
+        yawObject.translateX(velocity.x * delta);
+        yawObject.translateZ(velocity.z * delta);
+
+        prevTime = time;
       }
 
-      // Kameran följer spelaren
-      camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y + 3, player.position.z + 5), 0.1);
-      camera.lookAt(player.position);
+      // Flytta kulor
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i];
+        b.position.add(b.userData.velocity);
 
-      // Flytta kulor framåt
-      for(let i = bullets.length - 1; i >= 0; i--) {
-        bullets[i].position.add(bullets[i].direction.clone().multiplyScalar(bulletSpeed));
-        // Ta bort kulan om den kommer för långt
-        if(bullets[i].position.distanceTo(player.position) > 50) {
-          scene.remove(bullets[i]);
+        // Ta bort kula om för långt bort
+        if (b.position.length() > 1000) {
+          scene.remove(b);
           bullets.splice(i, 1);
         }
       }
@@ -103,14 +244,8 @@
       renderer.render(scene, camera);
     }
 
+    init();
     animate();
-
-    // Hantera fönsterstorlek
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth/window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
   </script>
 </body>
 </html>
