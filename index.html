@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,51 +7,60 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="background-container">
-    <div id="stone-walls"></div>
-    <div id="floor"></div>
-  </div>
-
-  <div id="left-sidebar">
-    <button id="shop-toggle" title="Toggle Pet Shop">🛒</button>
-    <div id="coins-display">
-      💰 Coins: <span id="coins-count">150</span>
-    </div>
-  </div>
-
-  <div id="shop-panel" class="hidden">
-    <h2>Pet Shop</h2>
-    <button onclick="buyPet('dragon')">Buy Dragon 🐉 - 100 coins</button>
-    <button onclick="buyDecoration('plant')">Buy Plant 🪴 - 50 coins</button>
-    <button onclick="buyDecoration('bowl')">Buy Bowl 🥣 - 30 coins</button>
-  </div>
-
   <div id="game-container">
-    <h1>🐾 Virtual Pet Game</h1>
 
-    <div class="name-input">
-      <label for="petName">Pet Name:</label>
-      <input type="text" id="petName" placeholder="Enter a name..." />
-      <button onclick="setPetName()">Save Name</button>
+    <h1>Virtual Pet Game</h1>
+
+    <div id="coins-display">Coins: <span id="coins-count">0</span></div>
+
+    <button id="shop-toggle" title="Open Pet Shop">🐾</button>
+
+    <div id="shop-panel" class="hidden">
+      <button id="shop-exit">X</button>
+      <h2>Pet Shop</h2>
+      <div id="shop-items">
+        <!-- Pets and decorations will be inserted here -->
+      </div>
     </div>
 
-    <div class="pet-selector">
-      <p>Choose Your Pet:</p>
-      <button onclick="changePet('cat')">🐱 Cat</button>
-      <button onclick="changePet('dog')">🐶 Dog</button>
-      <button onclick="changePet('alien')">👽 Alien</button>
-      <button onclick="changePet('bunny')">🐰 Bunny</button>
+    <div id="tutorial-modal" class="hidden">
+      <div class="tutorial-content">
+        <h2>Welcome to Virtual Pet Game!</h2>
+        <p>Click pets to interact with them.<br />
+          Use the pet shop 🐾 button to buy new pets.<br />
+          Drag pets or decorations to move them.<br />
+          Complete quests for coins!</p>
+        <button id="tutorial-close">Start Playing</button>
+      </div>
     </div>
 
-    <div id="pet-area" class="pet-area" onclick="hidePetMenu()">
-      <!-- Pets and decorations appear here -->
+    <div id="quest-panel">
+      <h3>Current Quest</h3>
+      <p id="quest-text">Loading quests...</p>
+      <button id="quest-claim" disabled>Claim Reward</button>
     </div>
 
-    <div id="pet-menu" class="pet-menu hidden">
-      <button onclick="feedPet()">🍔 Feed</button>
-      <button onclick="playWithPet()">🎾 Play</button>
-      <button onclick="putToSleep()">💤 Sleep</button>
+    <div class="pet-area" id="pet-area">
+      <!-- Background textures -->
+      <img src="https://i.imgur.com/SJasdBl.png" alt="Wood floor" class="background-floor" />
+      <img src="https://i.imgur.com/LSIc3qz.png" alt="Stone walls" class="background-wall" />
     </div>
+
+    <div class="pet-menu hidden" id="pet-menu">
+      <button id="feed-btn">Feed</button>
+      <button id="play-btn">Play</button>
+      <button id="sleep-btn">Sleep</button>
+      <input type="text" id="petName" placeholder="Rename pet..." />
+      <button id="rename-btn">Rename</button>
+    </div>
+
+    <audio id="background-music" loop>
+      <source src="https://cdn.pixabay.com/download/audio/2022/03/21/audio_603dbb8ac7.mp3?filename=relaxing-ambient-8701.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <button id="music-toggle" title="Toggle Music">🎵</button>
+
   </div>
 
   <script src="script.js"></script>
