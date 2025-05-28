@@ -1,98 +1,86 @@
-// Initial stats & coins
+// Image URLs for pets and decorations
+const images = {
+  cat: 'https://i.imgur.com/K7WcMYX.png',
+  dog: 'https://i.imgur.com/kRsIeN5.png',
+  alien: 'https://i.imgur.com/84eq0kQ.png',
+  bunny: 'https://i.imgur.com/FHNUj5P.png',
+  dragon: 'https://i.imgur.com/e4aasge.png',
+  plant: 'https://i.imgur.com/SjONT1r.png',
+  bowl: 'https://i.imgur.com/Qc2f6fw.png'
+};
+
 let stats = {
   hunger: 50,
   happiness: 50,
   energy: 50
 };
-
 let coins = 150;
 let selectedPet = 'cat';
-
-let pets = {
-  cat: 'https://i.imgur.com/eJwANIJ.png',
-  dog: 'https://i.imgur.com/kRsIeN5.png',
-  alien: 'https://i.imgur.com/84eq0kQ.png',
-  bunny: 'https://i.imgur.com/FHNUj5P.png',
-  dragon: 'https://i.imgur.com/3i0XYcC.png'
-};
-
-let decorations = {
-  plant: 'https://i.imgur.com/Fl1UnQU.png'
-};
-
-const petArea = document.getElementById("pet-area");
-const hungerBar = document.getElementById("hunger");
-const happinessBar = document.getElementById("happiness");
-const energyBar = document.getElementById("energy");
-const petMenu = document.getElementById("pet-menu");
-const coinsCount = document.getElementById("coins-count");
-
 let draggedElement = null;
 let offsetX = 0;
 let offsetY = 0;
 
-window.onload = function () {
-  loadGame();
-  updateUI();
-  setupDragging();
-};
+const petArea = document.getElementById('pet-area');
+const petMenu = document.getElementById('pet-menu');
+const coinsCount = document.getElementById('coins-count');
+const shopToggle = document.getElementById('shop-toggle');
+const shopPanel = document.getElementById('shop-panel');
 
 function updateUI() {
-  hungerBar.value = stats.hunger;
-  happinessBar.value = stats.happiness;
-  energyBar.value = stats.energy;
   coinsCount.textContent = coins;
 }
 
-function createPet(type, posX = null, posY = null, id = null) {
-  const img = document.createElement('img');
-  img.src = pets[type];
-  img.classList.add('pet');
-  img.draggable = false; // We'll handle dragging manually
-  img.dataset.type = 'pet';
-  img.dataset.petType = type;
-  img.id = id || `pet-${Date.now()}`;
-  setPosition(img, posX, posY);
-  img.onclick = function (e) {
-    e.stopPropagation();
-    selectedPet = type;
-    selectedId = img.id;
-    showPetMenuAt(img);
-  };
-  petArea.appendChild(img);
-  return img;
+function createPet(type, left = null, top = null, id = null) {
+  const pet = document.createElement('img');
+  pet.src = images[type];
+  pet.className = 'pet';
+  pet.draggable = false;
+  pet.dataset.type = 'pet';
+  pet.dataset.petType = type;
+  pet.id = id || `pet-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  // Set position, random if not specified
+  if (left === null || top === null) {
+    left = Math.random() * 70 + 10;
+    top = Math.random() * 60 + 10;
+  }
+  pet.style.left = left + '%';
+  pet.style.top = top + '%';
+  pet.dataset.left = left;
+  pet.dataset.top = top;
+
+  petArea.appendChild(pet);
+  setupDragging();
+
+  selectedPet = type;
+  selectedId = pet.id;
+  showPetMenuAt(pet);
+  saveGame();
+  updateUI();
 }
 
-function createDecoration(type, posX = null, posY = null, id = null) {
-  const img = document.createElement('img');
-  img.src = decorations[type];
-  img.classList.add('decoration');
-  img.draggable = false;
-  img.dataset.type = 'decoration';
-  img.dataset.decorationType = type;
-  img.id = id || `decoration-${Date.now()}`;
-  setPosition(img, posX, posY);
-  img.onclick = function (e) {
-    e.stopPropagation();
-    selectedPet = null; // no pet selected here
-    selectedId = img.id;
-    showPetMenuAt(img);
-  };
-  petArea.appendChild(img);
-  return img;
-}
+function createDecoration(type, left = null, top = null, id = null) {
+  const dec = document.createElement('img');
+  dec.src = images[type];
+  dec.className = 'decoration';
+  dec.draggable = false;
+  dec.dataset.type = 'decoration';
+  dec.dataset.decorationType = type;
+  dec.id = id || `decoration-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-function setPosition(element, x, y) {
-  if (x === null) {
-    x = Math.random() * 80;
+  if (left === null || top === null) {
+    left = Math.random() * 70 + 10;
+    top = Math.random() * 60 + 10;
   }
-  if (y === null) {
-    y = Math.random() * 50;
-  }
-  element.style.left = x + '%';
-  element.style.top = y + '%';
-  element.dataset.left = x;
-  element.dataset.top = y;
+  dec.style.left = left + '%';
+  dec.style.top = top + '%';
+  dec.dataset.left = left;
+  dec.dataset.top = top;
+
+  petArea.appendChild(dec);
+  setupDragging();
+  saveGame();
+  updateUI();
 }
 
 function feedPet() {
@@ -101,7 +89,7 @@ function feedPet() {
   if (!el || el.dataset.type !== 'pet') return;
   stats.hunger = Math.max(0, stats.hunger - 20);
   stats.happiness = Math.min(100, stats.happiness + 10);
-  coins += 5;  // Earn coins for caring
+  coins += 5;
   animatePet(el);
   updateUI();
   saveGame();
@@ -113,7 +101,7 @@ function playWithPet() {
   if (!el || el.dataset.type !== 'pet') return;
   stats.happiness = Math.min(100, stats.happiness + 15);
   stats.energy = Math.max(0, stats.energy - 10);
-  coins += 10;  // Earn more coins for playing
+  coins += 10;
   animatePet(el);
   updateUI();
   saveGame();
@@ -140,21 +128,18 @@ function setPetName() {
   if (name && selectedId) {
     let el = document.getElementById(selectedId);
     if (!el) return;
-    // Remove old name tag if exists
     let oldName = document.getElementById(`${el.id}-name`);
     if (oldName) oldName.remove();
-    // Create new name label
     let nameLabel = document.createElement('div');
     nameLabel.id = `${el.id}-name`;
     nameLabel.textContent = name;
     nameLabel.style.position = 'absolute';
     nameLabel.style.left = el.style.left;
-    // Place name slightly above the pet image
     let topNum = parseFloat(el.style.top);
     nameLabel.style.top = (topNum - 8) + '%';
     nameLabel.style.color = '#6d4c41';
     nameLabel.style.fontWeight = 'bold';
-    nameLabel.style.pointerEvents = 'none'; // So clicks go through
+    nameLabel.style.pointerEvents = 'none';
     nameLabel.style.userSelect = 'none';
     petArea.appendChild(nameLabel);
     saveGame();
@@ -174,8 +159,7 @@ function showPetMenu() {
 
 function showPetMenuAt(el) {
   showPetMenu();
-  // Optionally position menu near pet:
-  // For simplicity, fixed bottom center for now
+  selectedId = el.id;
 }
 
 function hidePetMenu() {
@@ -195,8 +179,10 @@ function buyPet(type) {
 }
 
 function buyDecoration(type) {
-  if (coins >= 50) {
-    coins -= 50;
+  let cost = 50;
+  if (type === 'bowl') cost = 30;
+  if (coins >= cost) {
+    coins -= cost;
     createDecoration(type);
     updateUI();
     saveGame();
@@ -205,11 +191,15 @@ function buyDecoration(type) {
   }
 }
 
-// Drag and Drop Logic
+// Drag and drop logic
 
 let selectedId = null;
 
 function setupDragging() {
+  // Only add event listeners once
+  if (setupDragging.done) return;
+  setupDragging.done = true;
+
   petArea.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('pet') || e.target.classList.contains('decoration')) {
       draggedElement = e.target;
@@ -218,6 +208,7 @@ function setupDragging() {
       offsetY = e.clientY - draggedElement.getBoundingClientRect().top;
       draggedElement.style.cursor = 'grabbing';
       showPetMenuAt(draggedElement);
+      e.stopPropagation();
     }
   });
 
@@ -235,11 +226,9 @@ function setupDragging() {
     let x = e.clientX - rect.left - offsetX;
     let y = e.clientY - rect.top - offsetY;
 
-    // Clamp so pet stays inside petArea
     x = Math.max(0, Math.min(rect.width - draggedElement.offsetWidth, x));
     y = Math.max(0, Math.min(rect.height - draggedElement.offsetHeight, y));
 
-    // Convert px to percentage for responsive positioning
     const xPercent = (x / rect.width) * 100;
     const yPercent = (y / rect.height) * 100;
 
@@ -248,88 +237,66 @@ function setupDragging() {
 
     draggedElement.dataset.left = xPercent;
     draggedElement.dataset.top = yPercent;
-  });
-}
 
-// Save and load from localStorage
-
-function saveGame() {
-  let gameState = {
-    stats,
-    coins,
-    pets: [],
-    decorations: [],
-    petNames: {}
-  };
-
-  // Save pets
-  petArea.querySelectorAll('.pet').forEach(pet => {
-    gameState.pets.push({
-      id: pet.id,
-      type: pet.dataset.petType,
-      left: pet.dataset.left,
-      top: pet.dataset.top
-    });
-  });
-
-  // Save decorations
-  petArea.querySelectorAll('.decoration').forEach(dec => {
-    gameState.decorations.push({
-      id: dec.id,
-      type: dec.dataset.decorationType,
-      left: dec.dataset.left,
-      top: dec.dataset.top
-    });
-  });
-
-  // Save pet names
-  petArea.querySelectorAll('div[id$="-name"]').forEach(nameDiv => {
-    const petId = nameDiv.id.replace('-name', '');
-    gameState.petNames[petId] = nameDiv.textContent;
-  });
-
-  localStorage.setItem('virtualPetGame', JSON.stringify(gameState));
-}
-
-function loadGame() {
-  const saved = localStorage.getItem('virtualPetGame');
-  if (!saved) {
-    createPet(selectedPet);
-    return;
-  }
-
-  const gameState = JSON.parse(saved);
-  stats = gameState.stats;
-  coins = gameState.coins;
-
-  petArea.innerHTML = '';
-
-  // Load pets
-  gameState.pets.forEach(p => {
-    createPet(p.type, parseFloat(p.left), parseFloat(p.top), p.id);
-  });
-
-  // Load decorations
-  gameState.decorations.forEach(d => {
-    createDecoration(d.type, parseFloat(d.left), parseFloat(d.top), d.id);
-  });
-
-  // Load pet names
-  Object.entries(gameState.petNames).forEach(([petId, name]) => {
-    let el = document.getElementById(petId);
-    if (el) {
-      let nameLabel = document.createElement('div');
-      nameLabel.id = `${petId}-name`;
-      nameLabel.textContent = name;
-      nameLabel.style.position = 'absolute';
-      nameLabel.style.left = el.style.left;
-      let topNum = parseFloat(el.style.top);
+    // Move name label with pet
+    let nameLabel = document.getElementById(`${draggedElement.id}-name`);
+    if (nameLabel) {
+      nameLabel.style.left = draggedElement.style.left;
+      let topNum = parseFloat(draggedElement.style.top);
       nameLabel.style.top = (topNum - 8) + '%';
-      nameLabel.style.color = '#6d4c41';
-      nameLabel.style.fontWeight = 'bold';
-      nameLabel.style.pointerEvents = 'none';
-      nameLabel.style.userSelect = 'none';
-      petArea.appendChild(nameLabel);
     }
   });
 }
+
+function toggleShop() {
+  if (shopPanel.style.left === '0px') {
+    shopPanel.style.left = '-300px';
+  } else {
+    shopPanel.style.left = '0px';
+  }
+}
+
+shopToggle.addEventListener('click', () => {
+  toggleShop();
+});
+
+function saveGame() {
+  const pets = [];
+  const decorations = [];
+  document.querySelectorAll('.pet').forEach(p => {
+    pets.push({
+      id: p.id,
+      type: p.dataset.petType,
+      left: p.dataset.left,
+      top: p.dataset.top
+    });
+  });
+  document.querySelectorAll('.decoration').forEach(d => {
+    decorations.push({
+      id: d.id,
+      type: d.dataset.decorationType,
+      left: d.dataset.left,
+      top: d.dataset.top
+    });
+  });
+  const data = {
+    pets, decorations, stats, coins
+  };
+  localStorage.setItem('petGameSave', JSON.stringify(data));
+}
+
+function loadGame() {
+  const data = JSON.parse(localStorage.getItem('petGameSave'));
+  if (!data) return;
+  stats = data.stats || stats;
+  coins = data.coins || coins;
+  petArea.innerHTML = '';
+  data.pets.forEach(p => createPet(p.type, p.left, p.top, p.id));
+  data.decorations.forEach(d => createDecoration(d.type, d.left, d.top, d.id));
+  updateUI();
+}
+
+window.onload = () => {
+  loadGame();
+  updateUI();
+};
