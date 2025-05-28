@@ -9,6 +9,10 @@
 <body>
   <h1>🐾 Virtual Pet Game</h1>
 
+  <div class="coins-display">
+    Coins: <span id="coins-count">150</span> 💰
+  </div>
+
   <div class="name-input">
     <label for="petName">Pet Name:</label>
     <input type="text" id="petName" placeholder="Enter a name..." />
@@ -24,8 +28,8 @@
   </div>
 
   <div class="game-area" onclick="hidePetMenu()">
-    <div id="pet-area" class="pet-area">
-      <!-- Pets will appear here -->
+    <div id="pet-area" class="pet-area" >
+      <!-- Pets and decorations appear here -->
     </div>
   </div>
 
@@ -35,17 +39,15 @@
     <button onclick="putToSleep()">💤 Sleep</button>
   </div>
 
-  <div class="stats">
-    <div>Hunger: <progress id="hunger" value="50" max="100"></progress></div>
-    <div>Happiness: <progress id="happiness" value="50" max="100"></progress></div>
-    <div>Energy: <progress id="energy" value="50" max="100"></progress></div>
-  </div>
-
   <div class="shop">
     <h2>🛒 Pet Shop</h2>
     <button onclick="buyPet('dragon')">Buy Dragon 🐉 - 100 coins</button>
     <button onclick="buyDecoration('plant')">Buy Plant 🪴 - 50 coins</button>
   </div>
+
+  <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+    * Drag pets and decorations to move them around!
+  </p>
 
   <script src="script.js"></script>
 </body>
