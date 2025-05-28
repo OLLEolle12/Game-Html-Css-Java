@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fef8e7;
+  text-align: center;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.pet-area {
+  margin: 20px 0;
+}
+
+.pet-area img {
+  width: 200px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.pet-area img.animate {
+  transform: scale(1.1);
+}
+
+.stats {
+  margin: 20px 0;
+  font-size: 1.1rem;
+}
+
+progress {
+  width: 200px;
+  height: 20px;
+}
+
+.controls button {
+  margin: 10px;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: #ffd966;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.controls button:hover {
+  background-color: #ffc107;
+}
